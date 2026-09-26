@@ -41,7 +41,7 @@
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.2</span>
+          <span class="version-label">V0.3</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -79,18 +79,18 @@
             </div>
 
             <label class="joint-row" for="joint1-angle">
-              <span class="joint-label"><span class="joint-index">01</span><span>底座旋转 · J1</span><output id="joint1-value">-20°</output></span>
-              <input id="joint1-angle" type="range" min="-180" max="180" step="1" value="-20" />
+              <span class="joint-label"><span class="joint-index">01</span><span>底座左右 · J1</span><output id="joint1-value" for="joint1-angle">30°</output></span>
+              <input id="joint1-angle" type="range" min="-180" max="180" step="1" value="30" aria-label="Joint1 底座左右旋转角度" />
             </label>
 
             <label class="joint-row" for="joint2-angle">
-              <span class="joint-label"><span class="joint-index">02</span><span>肩部俯仰 · J2</span><output id="joint2-value">26°</output></span>
-              <input id="joint2-angle" type="range" min="-90" max="120" step="1" value="26" />
+              <span class="joint-label"><span class="joint-index">02</span><span>肩部抬升 · J2</span><output id="joint2-value" for="joint2-angle">45°</output></span>
+              <input id="joint2-angle" type="range" min="-90" max="120" step="1" value="45" aria-label="Joint2 肩部抬升角度" />
             </label>
 
             <label class="joint-row" for="joint3-angle">
-              <span class="joint-label"><span class="joint-index">03</span><span>腕部俯仰 · J3</span><output id="joint3-value">-48°</output></span>
-              <input id="joint3-angle" type="range" min="-135" max="135" step="1" value="-48" />
+              <span class="joint-label"><span class="joint-index">03</span><span>手腕旋转 · J3</span><output id="joint3-value" for="joint3-angle">20°</output></span>
+              <input id="joint3-angle" type="range" min="-180" max="180" step="1" value="20" aria-label="Joint3 手腕旋转角度" />
             </label>
           </section>
 

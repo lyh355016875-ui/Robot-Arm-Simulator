@@ -1,6 +1,7 @@
 import { createCamera } from './camera.js';
 import { createRenderer } from './renderer.js';
-import { createRobotArm } from './robotArm.js';
+import { createRobotArm } from './robot/arm.js';
+import { connectJointControls } from './robot/controller.js';
 import { createScene } from './scene.js';
 
 const container = document.querySelector('#scene-container');
@@ -8,35 +9,13 @@ const fpsValue = document.querySelector('#fps-value');
 const engineState = document.querySelector('#engine-state');
 const engineIndicator = document.querySelector('#engine-indicator');
 
-function bindJointSliders(joints) {
-  const bindings = [
-    { inputId: 'joint1-angle', outputId: 'joint1-value', joint: joints.joint1, axis: 'y' },
-    { inputId: 'joint2-angle', outputId: 'joint2-value', joint: joints.joint2, axis: 'z' },
-    { inputId: 'joint3-angle', outputId: 'joint3-value', joint: joints.joint3, axis: 'z' },
-  ];
-
-  for (const binding of bindings) {
-    const input = document.getElementById(binding.inputId);
-    const output = document.getElementById(binding.outputId);
-    const updateAngle = () => {
-      const degrees = Number(input.value);
-      binding.joint.rotation[binding.axis] = (degrees * Math.PI) / 180;
-      output.value = `${degrees}°`;
-      output.textContent = `${degrees}°`;
-    };
-
-    input.addEventListener('input', updateAngle);
-    updateAngle();
-  }
-}
-
 try {
   const scene = createScene();
   const robot = createRobotArm(scene);
   const { camera, controls } = createCamera(container);
   const { renderer, resize } = createRenderer(container);
 
-  bindJointSliders(robot.joints);
+  connectJointControls(robot.joints);
   resize(camera);
 
   const resizeObserver = new ResizeObserver(() => resize(camera));
