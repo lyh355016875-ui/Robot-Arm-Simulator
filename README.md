@@ -1,16 +1,16 @@
 # AI 机械臂模拟器
 
-《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.5 六轴机械臂控制系统**，支持六个关节分别控制、角度限位、键盘微调，以及末端位置和方向实时反馈。
+《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.5 六轴机械臂控制系统**，支持六个关节分别控制、角度限位、键盘微调，以及末端位置和方向实时反馈。页面支持直接双击 `index.html` 启动。
 
 ## 项目结构
 
 ```text
 Robot-Arm-Simulator/
 ├── src/
-│   ├── main.js
-│   ├── camera.js
-│   ├── renderer.js
-│   ├── scene.js
+│   ├── main.js              # 页面启动和动画循环
+│   ├── camera.js            # 摄像机与轨道控制
+│   ├── renderer.js          # WebGL 渲染器
+│   ├── scene.js             # 场景、灯光和地面
 │   ├── styles.css
 │   ├── robot/
 │   │   ├── RobotArm.js        # 六轴模型、层级和末端姿态计算
@@ -60,12 +60,14 @@ Robot-Arm-Simulator/
 
 ## 运行方式
 
-需要安装 Node.js，并保持网络连接以从 jsDelivr 加载固定版本的 Three.js 和 OrbitControls。在项目目录执行 `npm run dev`，然后在浏览器打开 <http://127.0.0.1:8000/>。也可以运行 `node scripts/serve.mjs`。
+**直接运行：** 双击项目根目录的 `index.html`。页面会从 jsDelivr 加载 Three.js 0.186.0 和 OrbitControls，因此这种方式需要互联网连接；无需安装 npm 包或启动本地服务器。
 
-建议使用启用了 WebGL 2 的现代桌面浏览器。
+**本地服务器方式：** 安装 Node.js 后，在项目目录运行 `node scripts/serve.mjs`，再打开 <http://127.0.0.1:8000/>；也可以运行 `npm run dev`。本地服务器方式同样需要联网加载 Three.js。
+
+建议使用启用了 WebGL 2 和硬件加速的现代浏览器。
 
 ## 技术
 
-- HTML5、CSS、原生 JavaScript ES Modules
+- HTML5、CSS、原生 JavaScript（兼容双击打开的经典脚本）
 - Three.js 0.186.0、WebGL 2、OrbitControls
 - 六自由度 `Object3D` 关节层级、角度限位和末端世界姿态反馈

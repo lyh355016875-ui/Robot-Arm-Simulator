@@ -1,68 +1,61 @@
-import { createCamera } from './camera.js';
-import { createRenderer } from './renderer.js';
-import { createRobotArm } from './robot/RobotArm.js';
-import { JointController } from './controller/JointController.js';
-import { KeyboardController } from './controller/KeyboardController.js';
-import { PoseDisplay } from './controller/PoseDisplay.js';
-import { createScene } from './scene.js';
+(function (global) {
+  'use strict';
+  global.RobotArmSimulator = global.RobotArmSimulator || {};
+  const app = global.RobotArmSimulator;
 
-const container = document.querySelector('#scene-container');
-const fpsValue = document.querySelector('#fps-value');
-const engineState = document.querySelector('#engine-state');
-const engineIndicator = document.querySelector('#engine-indicator');
+  const { createCamera, createRenderer, createRobotArm, JointController, KeyboardController, PoseDisplay, createScene } = app;
+  const container = document.querySelector('#scene-container');
+  const fpsValue = document.querySelector('#fps-value');
+  try {
+    const scene = createScene();
+    const robot = createRobotArm(scene);
+    const { camera, controls } = createCamera(container);
+    const { renderer, resize } = createRenderer(container);
 
-try {
-  const scene = createScene();
-  const robot = createRobotArm(scene);
-  const { camera, controls } = createCamera(container);
-  const { renderer, resize } = createRenderer(container);
+    const poseDisplay = new PoseDisplay(robot);
+    const jointController = new JointController(robot, { onChange: () => poseDisplay.update() });
+    const keyboardController = new KeyboardController(jointController);
+    poseDisplay.update();
 
-  const poseDisplay = new PoseDisplay(robot);
-  const jointController = new JointController(robot, { onChange: () => poseDisplay.update() });
-  const keyboardController = new KeyboardController(jointController);
-  poseDisplay.update();
+    window.addEventListener('pagehide', () => {
+      jointController.dispose();
+      keyboardController.dispose();
+      controls.dispose();
+      renderer.dispose();
+    }, { once: true });
 
-  window.addEventListener('pagehide', () => {
-    jointController.dispose();
-    keyboardController.dispose();
-    controls.dispose();
-    renderer.dispose();
-  }, { once: true });
+    resize(camera);
+    const resizeObserver = new ResizeObserver(() => resize(camera));
+    resizeObserver.observe(container);
 
-  resize(camera);
-  const resizeObserver = new ResizeObserver(() => resize(camera));
-  resizeObserver.observe(container);
+    let frameCount = 0;
+    let lastFpsUpdate = performance.now();
+    let lastFrameTime = lastFpsUpdate;
+    let fps = 60;
 
-  let frameCount = 0;
-  let lastFpsUpdate = performance.now();
-  let lastFrameTime = lastFpsUpdate;
-  let fps = 60;
+    function animate(now) {
+      requestAnimationFrame(animate);
+      frameCount += 1;
 
-  function animate(now) {
-    requestAnimationFrame(animate);
-    frameCount += 1;
+      const elapsed = now - lastFpsUpdate;
+      if (elapsed >= 500) {
+        const measuredFps = (frameCount * 1000) / elapsed;
+        fps = Math.round(fps * 0.35 + measuredFps * 0.65);
+        fpsValue.textContent = String(fps);
+        frameCount = 0;
+        lastFpsUpdate = now;
+      }
 
-    const elapsed = now - lastFpsUpdate;
-    if (elapsed >= 500) {
-      const measuredFps = (frameCount * 1000) / elapsed;
-      fps = Math.round(fps * 0.35 + measuredFps * 0.65);
-      fpsValue.textContent = String(fps);
-      frameCount = 0;
-      lastFpsUpdate = now;
+      const delta = Math.min((now - lastFrameTime) / 1000, 0.05);
+      lastFrameTime = now;
+      controls.update(delta);
+      renderer.render(scene, camera);
     }
 
-    const delta = Math.min((now - lastFrameTime) / 1000, 0.05);
-    lastFrameTime = now;
-    controls.update(delta);
-    renderer.render(scene, camera);
+    global.RobotArmSimulatorBoot.ready();
+    requestAnimationFrame(animate);
+  } catch (error) {
+    global.RobotArmSimulatorBoot.fail(error);
+    fpsValue.textContent = 'ERR';
   }
-
-  engineState.textContent = '3D 引擎运行中';
-  engineIndicator.classList.add('is-ready');
-  requestAnimationFrame(animate);
-} catch (error) {
-  console.error('无法启动 3D 场景：', error);
-  engineState.textContent = '引擎启动失败';
-  engineIndicator.classList.add('has-error');
-  fpsValue.textContent = 'ERR';
-}
+})(window);
