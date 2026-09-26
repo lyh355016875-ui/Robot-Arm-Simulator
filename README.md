@@ -1,39 +1,66 @@
 # AI 机械臂模拟器
 
-《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.4 六轴工业机械臂**：重构为由独立 Three.js Object3D 关节和工业连杆组成的六自由度串联结构，六个滑块控制各自关节并实时显示角度。
+《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.5 六轴机械臂控制系统**，支持六个关节分别控制、角度限位、键盘微调，以及末端位置和方向实时反馈。
 
 ## 项目结构
 
+```text
 Robot-Arm-Simulator/
 ├── src/
 │   ├── main.js
-│   ├── scene.js
 │   ├── camera.js
 │   ├── renderer.js
+│   ├── scene.js
+│   ├── styles.css
 │   ├── robot/
-│   │   ├── RobotArm.js    # 六轴机器人和串联层级
-│   │   ├── Joint.js       # 关节旋转轴、角度限制和外壳
-│   │   ├── Link.js        # 金属连杆模型
-│   │   ├── EndEffector.js # 末端夹爪
-│   │   └── controller.js  # 六轴滑块和角度读数
-│   └── styles.css
+│   │   ├── RobotArm.js        # 六轴模型、层级和末端姿态计算
+│   │   ├── Joint.js           # 关节轴、角度限制和模型
+│   │   ├── Link.js            # 金属连杆模型
+│   │   └── EndEffector.js     # 末端工具与工具坐标点
+│   └── controller/
+│       ├── JointController.js # 六个滑块与角度同步
+│       ├── KeyboardController.js # 键盘关节微调
+│       └── PoseDisplay.js     # 末端 XYZ 与 Rx/Ry/Rz 显示
 ├── assets/
 ├── scripts/
 ├── index.html
 ├── package.json
 └── README.md
+```
 
-## 六轴机械臂层级
+## 机械臂结构与关节限制
 
-Robot → Base → Joint1 → Link1 → Joint2 → Link2 → Joint3 → Link3 → Joint4 → Joint5 → Joint6 → EndEffector
+层级为 `Robot → Base → J1 → Link1 → J2 → Link2 → J3 → Link3 → J4 → J5 → J6 → EndEffector`。每个关节由独立 Three.js `Object3D` 驱动，父节点转动会传递到其下游连杆和末端工具。
 
-六个关节是独立 Object3D，各自定义旋转轴、当前角度和最小/最大角度。父关节旋转会带动下游连杆和末端工具。控制面板可实时调节底座旋转、肩部俯仰、肘部旋转、腕部旋转、腕部俯仰和末端旋转。
+| 关节 | 作用 | 角度限制 |
+| --- | --- | ---: |
+| J1 | 底座旋转 | -180° 至 180° |
+| J2 | 肩部俯仰 | -90° 至 90° |
+| J3 | 肘部旋转 | -120° 至 120° |
+| J4 | 腕部旋转 | -180° 至 180° |
+| J5 | 腕部俯仰 | -125° 至 125° |
+| J6 | 末端旋转 | -360° 至 360° |
 
-当前版本实现正向层级旋转控制，不包含逆运动学（IK）。
+可拖动控制面板中的滑块控制关节。键盘每按一次调整 1°，按住 `Shift` 调整 10°：
+
+| 关节 | 减小 | 增大 |
+| --- | --- | --- |
+| J1 | A | D |
+| J2 | S | W |
+| J3 | F | R |
+| J4 | G | T |
+| J5 | H | Y |
+| J6 | J | U |
+
+焦点位于滑块、文本框等输入控件时，键盘控制会暂停，以保留这些控件的按键操作。滑块和键盘输入都会遵守关节限制。
+
+## 实时反馈
+
+面板显示末端工具点的世界坐标 X/Y/Z（米），以及按 XYZ 欧拉角表示的方向 Rx/Ry/Rz（度）。数据在任一关节角改变后立即更新。当前提供六轴正向运动学和层级控制，未实现逆运动学（IK）。
 
 ## 运行方式
 
-需要安装 Node.js，并保持网络连接以从 jsDelivr 加载固定版本的 Three.js 和 OrbitControls。在项目目录执行 npm run dev，然后在浏览器打开 http://127.0.0.1:8000/。也可以直接运行 node scripts/serve.mjs。
+需要安装 Node.js，并保持网络连接以从 jsDelivr 加载固定版本的 Three.js 和 OrbitControls。在项目目录执行 `npm run dev`，然后在浏览器打开 <http://127.0.0.1:8000/>。也可以运行 `node scripts/serve.mjs`。
 
 建议使用启用了 WebGL 2 的现代桌面浏览器。
 
@@ -41,4 +68,4 @@ Robot → Base → Joint1 → Link1 → Joint2 → Link2 → Joint3 → Link3 �
 
 - HTML5、CSS、原生 JavaScript ES Modules
 - Three.js 0.186.0、WebGL 2、OrbitControls
-- 六自由度 Object3D 关节层级、金属材质和实时阴影
+- 六自由度 `Object3D` 关节层级、角度限位和末端世界姿态反馈

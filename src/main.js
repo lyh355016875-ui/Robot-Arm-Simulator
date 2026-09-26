@@ -1,7 +1,9 @@
 import { createCamera } from './camera.js';
 import { createRenderer } from './renderer.js';
 import { createRobotArm } from './robot/RobotArm.js';
-import { connectJointControls } from './robot/controller.js';
+import { JointController } from './controller/JointController.js';
+import { KeyboardController } from './controller/KeyboardController.js';
+import { PoseDisplay } from './controller/PoseDisplay.js';
 import { createScene } from './scene.js';
 
 const container = document.querySelector('#scene-container');
@@ -15,9 +17,19 @@ try {
   const { camera, controls } = createCamera(container);
   const { renderer, resize } = createRenderer(container);
 
-  connectJointControls(robot.joints);
-  resize(camera);
+  const poseDisplay = new PoseDisplay(robot);
+  const jointController = new JointController(robot, { onChange: () => poseDisplay.update() });
+  const keyboardController = new KeyboardController(jointController);
+  poseDisplay.update();
 
+  window.addEventListener('pagehide', () => {
+    jointController.dispose();
+    keyboardController.dispose();
+    controls.dispose();
+    renderer.dispose();
+  }, { once: true });
+
+  resize(camera);
   const resizeObserver = new ResizeObserver(() => resize(camera));
   resizeObserver.observe(container);
 

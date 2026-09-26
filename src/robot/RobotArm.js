@@ -30,8 +30,8 @@ function createBase() {
 
 const JOINT_CONFIG = [
   { name: 'Joint1', axis: 'y', minAngle: -180, maxAngle: 180, initialAngle: 0, position: [0, 1.16, 0], housingRadius: 0.4 },
-  { name: 'Joint2', axis: 'z', minAngle: -110, maxAngle: 120, initialAngle: 30, position: [0, 1.1, 0], housingRadius: 0.36 },
-  { name: 'Joint3', axis: 'z', minAngle: -135, maxAngle: 135, initialAngle: -55, position: [1.65, 0, 0], housingRadius: 0.32 },
+  { name: 'Joint2', axis: 'z', minAngle: -90, maxAngle: 90, initialAngle: 30, position: [0, 1.1, 0], housingRadius: 0.36 },
+  { name: 'Joint3', axis: 'z', minAngle: -120, maxAngle: 120, initialAngle: -55, position: [1.65, 0, 0], housingRadius: 0.32 },
   { name: 'Joint4', axis: 'x', minAngle: -180, maxAngle: 180, initialAngle: 0, position: [1.45, 0, 0], housingRadius: 0.27 },
   { name: 'Joint5', axis: 'z', minAngle: -125, maxAngle: 125, initialAngle: 35, position: [0.24, 0, 0], housingRadius: 0.24 },
   { name: 'Joint6', axis: 'x', minAngle: -360, maxAngle: 360, initialAngle: 0, position: [0.24, 0, 0], housingRadius: 0.2 },
@@ -77,6 +77,23 @@ export class RobotArm {
     const joint = this.joints[index];
     if (!joint) throw new RangeError('不存在编号为 ' + (index + 1) + ' 的关节。');
     return joint.setAngleDegrees(degrees);
+  }
+
+  getEndEffectorPose() {
+    this.object3D.updateMatrixWorld(true);
+    const position = this.endEffector.toolTip.clone();
+    this.endEffector.object3D.localToWorld(position);
+    const quaternion = this.endEffector.object3D.getWorldQuaternion(new THREE.Quaternion());
+    const euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ');
+
+    return {
+      position,
+      orientation: {
+        roll: THREE.MathUtils.radToDeg(euler.x),
+        pitch: THREE.MathUtils.radToDeg(euler.y),
+        yaw: THREE.MathUtils.radToDeg(euler.z),
+      },
+    };
   }
 }
 

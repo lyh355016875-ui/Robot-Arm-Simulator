@@ -224,3 +224,28 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
   .joint-label { gap: 4px; font-size: 8px; }
   .joint-label output { font-size: 8px; }
 }
+
+.keyboard-help { margin: 12px 0 0; padding-top: 9px; border-top: 1px solid rgba(153,176,204,.13); color: #8192a8; font-size: 8px; line-height: 1.6; }
+.keyboard-help > span { margin-right: 4px; color: #aebbd0; }
+.keyboard-help kbd { display: inline-block; margin-left: 2px; color: #72d6df; }
+.pose-panel { position: absolute; z-index: 2; top: 112px; right: 25px; width: 228px; padding: 13px; border: 1px solid rgba(140,170,206,.15); border-radius: 11px; background: rgba(12,21,35,.82); box-shadow: 0 12px 34px rgba(0,0,0,.18); backdrop-filter: blur(14px); pointer-events: none; }
+.pose-panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.pose-panel-heading h2 { margin: 6px 0 0; color: #e2ebf5; font-size: 13px; font-weight: 620; }
+.feedback-dot { width: 6px; height: 6px; border-radius: 50%; background: #63d6a4; box-shadow: 0 0 9px #63d6a477; }
+.pose-group h3 { display: flex; justify-content: space-between; margin: 0 0 8px; color: #9fadc1; font-size: 9px; font-weight: 550; }
+.pose-group h3 span { color: #6e8199; font-size: 8px; }
+.pose-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+.pose-value { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 7px 6px; border: 1px solid rgba(153,176,204,.09); border-radius: 6px; background: rgba(29,43,62,.45); }
+.pose-value > span { color: #638b9a; font: 650 8px/1 "SFMono-Regular",Consolas,monospace; }
+.pose-value output { color: #80dce3; font: 600 9px/1 "SFMono-Regular",Consolas,monospace; white-space: nowrap; }
+.pose-divider { height: 1px; margin: 11px 0; background: rgba(153,176,204,.13); }
+@media (max-width: 700px) {
+  .joint-panel { width: 205px; max-height: 58%; }
+  .pose-panel { top: auto; right: 13px; bottom: 106px; width: 190px; padding: 10px; }
+  .pose-panel-heading { margin-bottom: 9px; }
+  .pose-panel-heading h2 { font-size: 11px; }
+  .pose-grid { gap: 4px; }
+  .pose-value { padding: 6px 4px; }
+  .pose-value output { font-size: 8px; }
+  .pose-divider { margin: 8px 0; }
+}

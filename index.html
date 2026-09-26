@@ -41,7 +41,7 @@
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.4</span>
+          <span class="version-label">V0.5</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -85,12 +85,12 @@
 
             <label class="joint-row" for="joint2-angle">
               <span class="joint-label"><span class="joint-index">02</span><span>Joint2 · 肩部俯仰</span><output id="joint2-value" for="joint2-angle">30°</output></span>
-              <input id="joint2-angle" type="range" min="-110" max="120" step="1" value="30" aria-label="Joint2 肩部俯仰角度" />
+              <input id="joint2-angle" type="range" min="-90" max="90" step="1" value="30" aria-label="Joint2 肩部俯仰角度" />
             </label>
 
             <label class="joint-row" for="joint3-angle">
               <span class="joint-label"><span class="joint-index">03</span><span>Joint3 · 肘部旋转</span><output id="joint3-value" for="joint3-angle">-55°</output></span>
-              <input id="joint3-angle" type="range" min="-135" max="135" step="1" value="-55" aria-label="Joint3 肘部旋转角度" />
+              <input id="joint3-angle" type="range" min="-120" max="120" step="1" value="-55" aria-label="Joint3 肘部旋转角度" />
             </label>
 
             <label class="joint-row" for="joint4-angle">
@@ -107,6 +107,31 @@
               <span class="joint-label"><span class="joint-index">06</span><span>Joint6 · 末端旋转</span><output id="joint6-value" for="joint6-angle">0°</output></span>
               <input id="joint6-angle" type="range" min="-360" max="360" step="1" value="0" aria-label="Joint6 末端旋转角度" />
             </label>
+            <p class="keyboard-help"><span>键盘微调</span> J1 A/D · J2 S/W · J3 F/R · J4 G/T · J5 H/Y · J6 J/U <kbd>Shift</kbd> 10°</p>
+          </section>
+
+          <section class="pose-panel" aria-label="末端实时姿态和坐标" aria-live="polite">
+            <div class="pose-panel-heading">
+              <div><span class="card-label">TOOL FEEDBACK</span><h2>当前姿态与坐标</h2></div>
+              <span class="feedback-dot" aria-hidden="true"></span>
+            </div>
+            <div class="pose-group">
+              <h3>坐标 XYZ <span>米</span></h3>
+              <div class="pose-grid">
+                <div class="pose-value"><span>X</span><output id="pose-x">0.000 m</output></div>
+                <div class="pose-value"><span>Y</span><output id="pose-y">0.000 m</output></div>
+                <div class="pose-value"><span>Z</span><output id="pose-z">0.000 m</output></div>
+              </div>
+            </div>
+            <div class="pose-divider"></div>
+            <div class="pose-group">
+              <h3>姿态 Rx · Ry · Rz <span>角度</span></h3>
+              <div class="pose-grid">
+                <div class="pose-value"><span>Rx</span><output id="pose-roll">0.0°</output></div>
+                <div class="pose-value"><span>Ry</span><output id="pose-pitch">0.0°</output></div>
+                <div class="pose-value"><span>Rz</span><output id="pose-yaw">0.0°</output></div>
+              </div>
+            </div>
           </section>
 
           <div class="viewport-footer">

@@ -25,6 +25,7 @@ export class EndEffector {
   constructor() {
     this.object3D = new THREE.Group();
     this.object3D.name = 'EndEffector';
+    this.toolTip = new THREE.Vector3(0.86, 0, 0);
 
     addMesh(this.object3D, new THREE.CylinderGeometry(0.18, 0.18, 0.16, 40), FLANGE_MATERIAL, 'Tool Flange', [0.09, 0, 0], [0, 0, Math.PI / 2]);
     addMesh(this.object3D, new THREE.BoxGeometry(0.34, 0.2, 0.3), BODY_MATERIAL, 'Gripper Palm', [0.34, 0, 0]);
