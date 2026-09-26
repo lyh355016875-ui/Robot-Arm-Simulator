@@ -1,9 +1,10 @@
 {
   "name": "robot-arm-simulator",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/serve.mjs"
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test scripts/kinematics.test.mjs"
   }
 }

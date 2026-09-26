@@ -82,18 +82,14 @@
     }
 
     getEndEffectorPose() {
-      this.object3D.updateMatrixWorld(true);
-      const position = this.endEffector.toolTip.clone();
-      this.endEffector.object3D.localToWorld(position);
-      const quaternion = this.endEffector.object3D.getWorldQuaternion(new THREE.Quaternion());
-      const euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ');
+      const pose = app.forwardKinematics(this.jointAngles.map((degrees) => THREE.MathUtils.degToRad(degrees)));
 
       return {
-        position,
+        position: new THREE.Vector3(pose.position.x, pose.position.y, pose.position.z),
         orientation: {
-          roll: THREE.MathUtils.radToDeg(euler.x),
-          pitch: THREE.MathUtils.radToDeg(euler.y),
-          yaw: THREE.MathUtils.radToDeg(euler.z),
+          roll: THREE.MathUtils.radToDeg(pose.orientation.roll),
+          pitch: THREE.MathUtils.radToDeg(pose.orientation.pitch),
+          yaw: THREE.MathUtils.radToDeg(pose.orientation.yaw),
         },
       };
     }

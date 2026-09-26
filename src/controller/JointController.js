@@ -4,7 +4,7 @@
   const app = global.RobotArmSimulator;
 
   class JointController {
-    constructor(robot, { root = document, onChange = () => {} } = {}) {
+    constructor(robot, { root = document, onChange = () => {}, onManualChange = () => {} } = {}) {
       if (!robot || !Array.isArray(robot.joints) || robot.joints.length !== 6) {
         throw new TypeError('六轴控制器需要一个包含六个关节的机械臂。');
       }
@@ -12,6 +12,7 @@
       this.robot = robot;
       this.root = root;
       this.onChange = onChange;
+      this.onManualChange = onManualChange;
       this.inputs = [];
       this.outputs = [];
       this.listeners = [];
@@ -42,7 +43,19 @@
       this.inputs[index].value = String(degrees);
       this.updateReadout(index);
       this.onChange(this.robot);
+      this.onManualChange(this.robot);
       return degrees;
+    }
+
+    setAngles(degreesList) {
+      if (!Array.isArray(degreesList) || degreesList.length !== 6) throw new TypeError('批量关节控制需要六个角度。');
+      const values = degreesList.map((degrees, index) => this.robot.setJointAngle(index, degrees));
+      values.forEach((degrees, index) => {
+        this.inputs[index].value = String(degrees);
+        this.updateReadout(index);
+      });
+      this.onChange(this.robot);
+      return values;
     }
 
     adjustAngle(index, delta) {
