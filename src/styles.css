@@ -192,8 +192,10 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
   z-index: 2;
   top: 50%;
   left: 24px;
-  width: 218px;
-  padding: 15px 15px 12px;
+  width: 244px;
+  max-height: calc(100% - 36px);
+  overflow-y: auto;
+  padding: 14px 14px 10px;
   border: 1px solid rgba(140, 170, 206, .15);
   border-radius: 11px;
   background: rgba(12, 21, 35, .82);
@@ -201,10 +203,10 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
   transform: translateY(-50%);
   backdrop-filter: blur(14px);
 }
-.joint-panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.joint-panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .joint-panel-heading h2 { margin: 6px 0 0; color: #e2ebf5; font-size: 13px; font-weight: 620; }
 .joint-count { padding: 5px 6px; border: 1px solid rgba(84, 209, 223, .17); border-radius: 5px; color: #63cbd8; background: rgba(48, 126, 150, .1); font: 650 8px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; }
-.joint-row { display: block; margin-top: 13px; cursor: pointer; }
+.joint-row { display: block; margin-top: 9px; cursor: pointer; }
 .joint-label { display: flex; align-items: center; gap: 6px; color: #aebcd0; font-size: 9px; white-space: nowrap; }
 .joint-index { color: #5a8796; font: 650 8px/1 "SFMono-Regular", Consolas, monospace; }
 .joint-label output { margin-left: auto; color: #72d6df; font: 600 9px/1 "SFMono-Regular", Consolas, monospace; }
@@ -216,9 +218,9 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
 .joint-row input[type="range"]:focus-visible { outline: 1px solid rgba(84, 209, 223, .7); outline-offset: 3px; border-radius: 3px; }
 
 @media (max-width: 700px) {
-  .joint-panel { left: 13px; width: 178px; padding: 12px 11px 9px; }
-  .joint-panel-heading { margin-bottom: 10px; }
-  .joint-row { margin-top: 10px; }
+  .joint-panel { left: 13px; width: 205px; max-height: 64%; padding: 10px 10px 8px; }
+  .joint-panel-heading { margin-bottom: 8px; }
+  .joint-row { margin-top: 7px; }
   .joint-label { gap: 4px; font-size: 8px; }
   .joint-label output { font-size: 8px; }
 }

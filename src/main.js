@@ -1,6 +1,6 @@
 import { createCamera } from './camera.js';
 import { createRenderer } from './renderer.js';
-import { createRobotArm } from './robot/arm.js';
+import { createRobotArm } from './robot/RobotArm.js';
 import { connectJointControls } from './robot/controller.js';
 import { createScene } from './scene.js';
 

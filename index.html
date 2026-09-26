@@ -41,7 +41,7 @@
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.3</span>
+          <span class="version-label">V0.4</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -56,8 +56,8 @@
 
           <div class="viewport-heading">
             <div class="eyebrow"><span class="eyebrow-line"></span> SIMULATION SPACE</div>
-            <h1>三维机械臂工作区</h1>
-            <p>Object3D 层级结构 · 3 个可调旋转关节</p>
+            <h1>六轴工业机械臂工作区</h1>
+            <p>串联六自由度结构 · 关节角度实时控制</p>
           </div>
 
           <div class="engine-card" aria-label="渲染引擎状态">
@@ -69,28 +69,43 @@
             <span class="card-ready"><span></span> READY</span>
           </div>
 
-          <section class="joint-panel" aria-label="机械臂关节角度控制">
+          <section class="joint-panel" aria-label="六轴机械臂关节角度控制">
             <div class="joint-panel-heading">
               <div>
                 <span class="card-label">JOINT CONTROL</span>
-                <h2>关节角度</h2>
+                <h2>六轴关节控制</h2>
               </div>
-              <span class="joint-count">3 DOF</span>
+              <span class="joint-count">6 DOF</span>
             </div>
 
             <label class="joint-row" for="joint1-angle">
-              <span class="joint-label"><span class="joint-index">01</span><span>底座左右 · J1</span><output id="joint1-value" for="joint1-angle">30°</output></span>
-              <input id="joint1-angle" type="range" min="-180" max="180" step="1" value="30" aria-label="Joint1 底座左右旋转角度" />
+              <span class="joint-label"><span class="joint-index">01</span><span>Joint1 · 底座旋转</span><output id="joint1-value" for="joint1-angle">0°</output></span>
+              <input id="joint1-angle" type="range" min="-180" max="180" step="1" value="0" aria-label="Joint1 底座旋转角度" />
             </label>
 
             <label class="joint-row" for="joint2-angle">
-              <span class="joint-label"><span class="joint-index">02</span><span>肩部抬升 · J2</span><output id="joint2-value" for="joint2-angle">45°</output></span>
-              <input id="joint2-angle" type="range" min="-90" max="120" step="1" value="45" aria-label="Joint2 肩部抬升角度" />
+              <span class="joint-label"><span class="joint-index">02</span><span>Joint2 · 肩部俯仰</span><output id="joint2-value" for="joint2-angle">30°</output></span>
+              <input id="joint2-angle" type="range" min="-110" max="120" step="1" value="30" aria-label="Joint2 肩部俯仰角度" />
             </label>
 
             <label class="joint-row" for="joint3-angle">
-              <span class="joint-label"><span class="joint-index">03</span><span>手腕旋转 · J3</span><output id="joint3-value" for="joint3-angle">20°</output></span>
-              <input id="joint3-angle" type="range" min="-180" max="180" step="1" value="20" aria-label="Joint3 手腕旋转角度" />
+              <span class="joint-label"><span class="joint-index">03</span><span>Joint3 · 肘部旋转</span><output id="joint3-value" for="joint3-angle">-55°</output></span>
+              <input id="joint3-angle" type="range" min="-135" max="135" step="1" value="-55" aria-label="Joint3 肘部旋转角度" />
+            </label>
+
+            <label class="joint-row" for="joint4-angle">
+              <span class="joint-label"><span class="joint-index">04</span><span>Joint4 · 腕部旋转</span><output id="joint4-value" for="joint4-angle">0°</output></span>
+              <input id="joint4-angle" type="range" min="-180" max="180" step="1" value="0" aria-label="Joint4 腕部旋转角度" />
+            </label>
+
+            <label class="joint-row" for="joint5-angle">
+              <span class="joint-label"><span class="joint-index">05</span><span>Joint5 · 腕部俯仰</span><output id="joint5-value" for="joint5-angle">35°</output></span>
+              <input id="joint5-angle" type="range" min="-125" max="125" step="1" value="35" aria-label="Joint5 腕部俯仰角度" />
+            </label>
+
+            <label class="joint-row" for="joint6-angle">
+              <span class="joint-label"><span class="joint-index">06</span><span>Joint6 · 末端旋转</span><output id="joint6-value" for="joint6-angle">0°</output></span>
+              <input id="joint6-angle" type="range" min="-360" max="360" step="1" value="0" aria-label="Joint6 末端旋转角度" />
             </label>
           </section>
 

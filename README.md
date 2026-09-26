@@ -1,52 +1,39 @@
 # AI 机械臂模拟器
 
-《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.3 机械臂实时控制**：在 V0.2 的 Three.js `Object3D` 机械臂层级上加入三自由度滑块控制，拖动滑块时关节和末端执行器会实时运动，面板同步显示当前角度。
+《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.4 六轴工业机械臂**：重构为由独立 Three.js Object3D 关节和工业连杆组成的六自由度串联结构，六个滑块控制各自关节并实时显示角度。
 
 ## 项目结构
 
-```text
 Robot-Arm-Simulator/
 ├── src/
-│   ├── main.js       # 应用入口与 FPS 动画循环
-│   ├── scene.js      # 场景、光源与网格地面
-│   ├── camera.js     # 透视摄像机与 OrbitControls
-│   ├── renderer.js   # WebGL 渲染器与尺寸适配
+│   ├── main.js
+│   ├── scene.js
+│   ├── camera.js
+│   ├── renderer.js
 │   ├── robot/
-│   │   ├── arm.js        # 机械臂模型与 Object3D 层级
-│   │   ├── joint.js      # 关节对象与角度控制
-│   │   └── controller.js # 滑块事件及角度读数
-│   └── styles.css    # 实验平台界面
-├── assets/           # 模型、纹理等静态资源
+│   │   ├── RobotArm.js    # 六轴机器人和串联层级
+│   │   ├── Joint.js       # 关节旋转轴、角度限制和外壳
+│   │   ├── Link.js        # 金属连杆模型
+│   │   ├── EndEffector.js # 末端夹爪
+│   │   └── controller.js  # 六轴滑块和角度读数
+│   └── styles.css
+├── assets/
 ├── scripts/
-│   └── serve.mjs     # Node.js 内置模块开发服务器
 ├── index.html
 ├── package.json
 └── README.md
-```
 
-## 机械臂层级
+## 六轴机械臂层级
 
-```text
-Base
-└── Joint1（底座旋转）
-    └── Arm1（立柱连杆）
-        └── Joint2（肩部俯仰）
-            └── Arm2（前臂连杆）
-                └── Joint3（腕部俯仰）
-                    └── EndEffector（夹爪）
-```
+Robot → Base → Joint1 → Link1 → Joint2 → Link2 → Joint3 → Link3 → Joint4 → Joint5 → Joint6 → EndEffector
 
-子对象随父关节一起变换。控制面板默认角度为 Joint1 30°、Joint2 45°、Joint3 20°；可用滑块实时调整底座左右旋转、肩部抬升和手腕旋转，角度读数同步更新。拖动视口可旋转相机，滚轮缩放，右键拖动平移。
+六个关节是独立 Object3D，各自定义旋转轴、当前角度和最小/最大角度。父关节旋转会带动下游连杆和末端工具。控制面板可实时调节底座旋转、肩部俯仰、肘部旋转、腕部旋转、腕部俯仰和末端旋转。
+
+当前版本实现正向层级旋转控制，不包含逆运动学（IK）。
 
 ## 运行方式
 
-需要安装 Node.js，并保持网络连接以从 jsDelivr 加载固定版本的 Three.js 和 OrbitControls。在项目目录执行：
-
-```powershell
-npm run dev
-```
-
-然后在浏览器打开 `http://127.0.0.1:8000/`。也可以直接运行 `node scripts/serve.mjs`。需要更换端口时，可在 PowerShell 中运行 `$env:PORT = 8080; npm run dev`。
+需要安装 Node.js，并保持网络连接以从 jsDelivr 加载固定版本的 Three.js 和 OrbitControls。在项目目录执行 npm run dev，然后在浏览器打开 http://127.0.0.1:8000/。也可以直接运行 node scripts/serve.mjs。
 
 建议使用启用了 WebGL 2 的现代桌面浏览器。
 
@@ -54,5 +41,4 @@ npm run dev
 
 - HTML5、CSS、原生 JavaScript ES Modules
 - Three.js 0.186.0、WebGL 2、OrbitControls
-- `Object3D` 关节层级与 MeshStandardMaterial 金属表面
-- DirectionalLight 阴影与 HemisphereLight / DirectionalLight 补光
+- 六自由度 Object3D 关节层级、金属材质和实时阴影

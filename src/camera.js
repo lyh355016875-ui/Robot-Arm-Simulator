@@ -3,11 +3,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export function createCamera(viewport) {
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 180);
-  camera.position.set(8, 7, 10.8);
-  camera.lookAt(0.55, 1.55, 0);
+  camera.position.set(7.5, 6.5, 9.7);
+  camera.lookAt(1.35, 1.65, 0);
 
   const controls = new OrbitControls(camera, viewport);
-  controls.target.set(0.55, 1.55, 0);
+  controls.target.set(1.35, 1.65, 0);
   controls.enableDamping = true;
   controls.dampingFactor = 0.065;
   controls.minDistance = 3.5;
@@ -17,4 +17,3 @@ export function createCamera(viewport) {
 
   return { camera, controls };
 }
-

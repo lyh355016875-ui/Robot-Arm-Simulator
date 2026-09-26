@@ -14,7 +14,7 @@ export function createRenderer(container) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.domElement.className = 'scene-canvas';
-  renderer.domElement.setAttribute('aria-label', '可交互的 3D 机械臂与坐标网格场景');
+  renderer.domElement.setAttribute('aria-label', '可交互的六轴工业机械臂与坐标网格场景');
   container.appendChild(renderer.domElement);
 
   function resize(camera) {
@@ -28,5 +28,3 @@ export function createRenderer(container) {
 
   return { renderer, resize };
 }
-
-
