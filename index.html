@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="description" content="AI 机械臂模拟器 — 浏览器中的 3D 机器人实验平台。" />
+    <title>AI 机械臂模拟器 · Robot Lab</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="AI 机械臂模拟器首页">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M16 4.5v7.2m0 0 6.1 4.1m-6.1-4.1-6.1 4.1m6.1 0v7.7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              <circle cx="16" cy="4.5" r="2.4" fill="currentColor" />
+              <circle cx="16" cy="11.7" r="3.1" fill="#0b1220" stroke="currentColor" stroke-width="2.2" />
+              <circle cx="9.9" cy="15.8" r="2.5" fill="currentColor" />
+              <circle cx="22.1" cy="15.8" r="2.5" fill="currentColor" />
+              <path d="M12.6 23.5h6.8M13.8 27h4.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <strong>AI 机械臂模拟器</strong>
+            <span>ROBOT ARM SIMULATOR</span>
+          </span>
+        </a>
+
+        <div class="topbar-center" aria-label="当前版本">
+          <span class="version-dot"></span>
+          <span>实验平台</span>
+          <span class="topbar-divider">/</span>
+          <span class="version-label">V0.2</span>
+        </div>
+
+        <div class="system-state" role="status" aria-live="polite">
+          <span class="state-light" id="engine-indicator"></span>
+          <span id="engine-state">正在启动 3D 引擎</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="viewport" aria-label="3D 机械臂场景视口">
+          <div id="scene-container" class="scene-container"></div>
+
+          <div class="viewport-heading">
+            <div class="eyebrow"><span class="eyebrow-line"></span> SIMULATION SPACE</div>
+            <h1>三维机械臂工作区</h1>
+            <p>Object3D 层级结构 · 3 个可调旋转关节</p>
+          </div>
+
+          <div class="engine-card" aria-label="渲染引擎状态">
+            <div class="engine-card-icon" aria-hidden="true">3D</div>
+            <div>
+              <span class="card-label">RENDER ENGINE</span>
+              <strong>Three.js <span class="engine-version">r186</span></strong>
+            </div>
+            <span class="card-ready"><span></span> READY</span>
+          </div>
+
+          <section class="joint-panel" aria-label="机械臂关节角度控制">
+            <div class="joint-panel-heading">
+              <div>
+                <span class="card-label">JOINT CONTROL</span>
+                <h2>关节角度</h2>
+              </div>
+              <span class="joint-count">3 DOF</span>
+            </div>
+
+            <label class="joint-row" for="joint1-angle">
+              <span class="joint-label"><span class="joint-index">01</span><span>底座旋转 · J1</span><output id="joint1-value">-20°</output></span>
+              <input id="joint1-angle" type="range" min="-180" max="180" step="1" value="-20" />
+            </label>
+
+            <label class="joint-row" for="joint2-angle">
+              <span class="joint-label"><span class="joint-index">02</span><span>肩部俯仰 · J2</span><output id="joint2-value">26°</output></span>
+              <input id="joint2-angle" type="range" min="-90" max="120" step="1" value="26" />
+            </label>
+
+            <label class="joint-row" for="joint3-angle">
+              <span class="joint-label"><span class="joint-index">03</span><span>腕部俯仰 · J3</span><output id="joint3-value">-48°</output></span>
+              <input id="joint3-angle" type="range" min="-135" max="135" step="1" value="-48" />
+            </label>
+          </section>
+
+          <div class="viewport-footer">
+            <div class="world-status">
+              <span class="coordinate-icon" aria-hidden="true">⌖</span>
+              <span>世界坐标轴</span>
+              <span class="footer-separator"></span>
+              <span class="muted">单位 <b>米</b></span>
+            </div>
+            <div class="fps-counter" aria-live="off">
+              <span class="fps-indicator"></span>
+              <span class="fps-number" id="fps-value">--</span>
+              <span class="fps-label">FPS</span>
+            </div>
+          </div>
+
+          <div class="controls-hint" aria-label="视角控制说明">
+            <span class="hint-item"><kbd>拖动</kbd> 旋转视角</span>
+            <span class="hint-separator"></span>
+            <span class="hint-item"><kbd>滚轮</kbd> 缩放</span>
+            <span class="hint-separator"></span>
+            <span class="hint-item"><kbd>右键拖动</kbd> 平移</span>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <noscript>此实验平台需要启用 JavaScript 才能运行。</noscript>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
