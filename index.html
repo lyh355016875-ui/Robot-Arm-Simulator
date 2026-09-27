@@ -41,7 +41,7 @@
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.6</span>
+          <span class="version-label">V0.7</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -57,7 +57,7 @@
           <div class="viewport-heading">
             <div class="eyebrow"><span class="eyebrow-line"></span> SIMULATION SPACE</div>
             <h1>六轴工业机械臂工作区</h1>
-            <p>串联六自由度结构 · 关节角度实时控制</p>
+            <p>工业工位 · 虚拟视觉检测 · 自动抓取</p>
           </div>
 
           <div class="engine-card" aria-label="渲染引擎状态">
@@ -108,6 +108,21 @@
               <input id="joint6-angle" type="range" min="-360" max="360" step="1" value="0" aria-label="Joint6 末端旋转角度" />
             </label>
             <p class="keyboard-help"><span>键盘微调</span> J1 A/D · J2 S/W · J3 F/R · J4 G/T · J5 H/Y · J6 J/U <kbd>Shift</kbd> 10°</p>
+
+            <section class="task-control" aria-label="自动抓取任务控制">
+              <div class="task-control-heading">
+                <div><span class="card-label">PICK &amp; PLACE</span><h3>自动抓取</h3></div>
+                <span id="task-state" class="task-state" data-state="idle">IDLE</span>
+              </div>
+              <div class="task-buttons">
+                <button id="spawn-workpieces" type="button">随机生成</button>
+                <button id="start-pick-place" class="task-start-button" type="button">开始抓取</button>
+                <button id="stop-pick-place" class="task-stop-button" type="button" disabled>停止</button>
+              </div>
+              <button id="release-held-part" class="task-recovery-button" type="button" disabled>安全放置夹爪中的工件</button>
+              <div class="task-log-heading"><span>任务日志</span><span>视觉 · 运动 · 夹爪</span></div>
+              <ol id="task-log" class="task-log" aria-live="polite" aria-relevant="additions"></ol>
+            </section>
           </section>
 
           <section class="pose-panel" aria-label="末端实时姿态和坐标" aria-live="polite">
@@ -233,8 +248,9 @@
         './src/scene.js', './src/camera.js', './src/renderer.js',
         './src/kinematics/matrix.js', './src/kinematics/forward.js', './src/kinematics/inverse.js',
         './src/robot/Joint.js', './src/robot/Link.js', './src/robot/EndEffector.js', './src/robot/RobotArm.js',
+        './src/robot/Workbench.js',
         './src/controller/JointController.js', './src/controller/KeyboardController.js', './src/controller/PoseDisplay.js',
-        './src/controller/TargetController.js',
+        './src/controller/TargetController.js', './src/controller/PickPlaceController.js',
         './src/main.js',
       ];
       for (const script of scripts) await loadLocalScript(script);

@@ -1,6 +1,6 @@
 # AI 机械臂模拟器
 
-《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.6 六轴机械臂逆运动学**，支持正向与逆向运动学、目标位姿控制、六轴关节控制和末端姿态反馈。页面支持直接双击 `index.html` 启动。
+《AI 机械臂模拟器》是运行在浏览器中的 3D 机器人实验平台。当前版本为 **V0.7 六轴机械臂自动抓取**，支持六轴正逆运动学、随机工件、视觉定位、夹爪抓取和自动放置。页面支持直接双击 `index.html` 启动。
 
 ## 项目结构
 
@@ -16,12 +16,14 @@ Robot-Arm-Simulator/
 │   │   ├── RobotArm.js        # 六轴模型、层级和末端姿态计算
 │   │   ├── Joint.js           # 关节轴、角度限制和模型
 │   │   ├── Link.js            # 金属连杆模型
-│   │   └── EndEffector.js     # 末端工具与工具坐标点
+│   │   ├── EndEffector.js     # 可开合夹爪与工具坐标点
+│   │   └── Workbench.js       # 工业工作台、随机工件和虚拟视觉相机
 │   ├── controller/
 │   │   ├── JointController.js # 六个滑块与角度同步
 │   │   ├── KeyboardController.js # 键盘关节微调
 │   │   ├── PoseDisplay.js     # 末端 XYZ 与 Rx/Ry/Rz 显示
-│   │   └── TargetController.js # 目标球、逆解和关节动画
+│   │   ├── TargetController.js # 目标球、逆解和关节动画
+│   │   └── PickPlaceController.js # IDLE/SCAN/MOVE/GRAB/PLACE 状态机
 │   └── kinematics/
 │       ├── forward.js        # 六轴正运动学
 │       ├── inverse.js        # 带关节限位的阻尼最小二乘逆解
@@ -67,7 +69,13 @@ Robot-Arm-Simulator/
 
 正运动学和逆运动学使用与模型相同的关节轴、连杆偏移和末端工具长度。逆解以弧度计算，内部使用数值雅可比和阻尼最小二乘法，并在每轮迭代应用六个关节的限位。
 
-在安装 Node.js 的环境中运行 `npm test` 执行运动学单元测试。
+在安装 Node.js 的环境中运行 `npm test` 执行运动学和抓取状态机单元测试。
+
+## 自动抓取
+
+工作台会随机生成方块、球体和加工件。点击“开始抓取”后，系统按 IDLE → SCAN → MOVE → GRAB → PLACE 执行：虚拟视觉相机用投影与射线检测可见工件，IK 规划抓取和放置位姿，夹爪闭合后将工件附着到末端，随后放入托盘。任务面板显示当前状态和最近的操作日志；可以停止任务，若工件仍在夹爪中，可选择安全放置到托盘。
+
+当前“视觉检测”是基于 Three.js 场景几何的模拟传感器，不使用真实摄像头图像或机器学习模型。
 
 ## 运行方式
 

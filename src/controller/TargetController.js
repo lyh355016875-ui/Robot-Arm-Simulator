@@ -166,26 +166,51 @@
           ? '目标误差在容差内，机械臂正在移动。'
           : '目标不可完全到达，正在移动到当前最佳近似解（误差 ' + distance.toFixed(1) + ' cm / ' + angleError.toFixed(1) + '°）。';
       this.setStatus(result.converged ? '已找到逆运动学解，正在移动。' : this.animationMessage, result.converged || withinPracticalTolerance ? 'ready' : 'error');
-      this.startAnimation(result.angles, completionMessage);
+      this.startAnimation(result.angles, completionMessage, result);
       return result;
     }
 
-    startAnimation(targetAngles, completionMessage) {
+    moveToPose(pose) {
+      this.writeInputs({
+        position: pose.position,
+        orientation: {
+          roll: pose.orientation.roll * RAD_TO_DEG,
+          pitch: pose.orientation.pitch * RAD_TO_DEG,
+          yaw: pose.orientation.yaw * RAD_TO_DEG,
+        },
+      });
+      this.syncMarkerFromInputs();
+      const solution = this.moveToTarget();
+      return solution ? this.motionPromise : Promise.resolve({ cancelled: true, solution: null });
+    }
+
+    startAnimation(targetAngles, completionMessage, solution) {
+      this.finishMotion({ cancelled: true, solution: null });
       const from = this.robot.jointAngles.map((degrees) => degrees * DEG_TO_RAD);
       const maxDifference = Math.max(...from.map((angle, index) => Math.abs(targetAngles[index] - angle)));
+      this.motionPromise = new Promise((resolve) => { this.motionResolve = resolve; });
       this.animation = {
         from,
         to: targetAngles.slice(),
         elapsed: 0,
         duration: Math.max(0.35, Math.min(1.6, maxDifference / 0.95)),
         completionMessage,
+        solution,
       };
     }
 
     cancelMotion() {
       clearTimeout(this.debounceTimer);
       this.animation = null;
+      this.finishMotion({ cancelled: true, solution: null });
       this.setStatus('自动移动已停止，可继续手动控制关节。', 'ready');
+    }
+
+    finishMotion(result) {
+      if (!this.motionResolve) return;
+      this.motionResolve(result);
+      this.motionResolve = null;
+      this.motionPromise = null;
     }
 
     update(deltaSeconds) {
@@ -199,6 +224,7 @@
       if (linear >= 1) {
         this.animation = null;
         this.setStatus(animation.completionMessage, animation.completionMessage.startsWith('已到达') ? 'ready' : 'error');
+        this.finishMotion({ cancelled: false, solution: animation.solution });
       }
     }
 
@@ -209,6 +235,7 @@
 
     dispose() {
       clearTimeout(this.debounceTimer);
+      this.cancelMotion();
       this.removeListeners.forEach((removeListener) => removeListener());
       this.transformControls.dispose();
       this.scene.remove(this.transformHelper);
