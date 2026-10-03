@@ -1,6 +1,6 @@
 {
   "name": "robot-arm-simulator",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Browser-based six-axis robot arm simulator desktop application",
   "author": "Robot Arm Simulator Contributors",
@@ -12,7 +12,7 @@
     "test": "node --test scripts/kinematics.test.mjs",
     "desktop": "electron .",
     "pack:dir": "electron-builder --dir",
-    "dist:win": "electron-builder --win nsis portable --x64"
+    "dist:win": "electron-builder --publish never --win nsis portable --x64"
   },
   "dependencies": {
     "three": "0.186.0"
@@ -41,18 +41,24 @@
       {
         "from": "node_modules/three/examples/jsm",
         "to": "three-examples",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "artifactName": "Robot-Arm-Simulator-${version}-win-${arch}.${ext}"

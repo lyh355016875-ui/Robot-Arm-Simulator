@@ -2,7 +2,7 @@
 
 ## 1. 项目目标
 
-在浏览器中开发 3D 六轴工业机械臂模拟器，支持关节控制、FK/IK、自动抓取、传感器仿真，以及可配置卡片式数字工作台。当前版本：V0.9；V0.8 基线提交 `3358ca3`。
+开发 3D 六轴工业机械臂模拟器，支持关节控制、FK/IK、自动抓取、传感器仿真，以及可配置卡片式数字工作台。当前发行目标：V1.0.0 Windows 桌面版；浏览器功能基线：V0.9；V0.8 基线提交 `3358ca3`。
 
 ## 2. 当前目录结构
 
@@ -41,7 +41,7 @@ Robot-Arm-Simulator/
 
 ## 4. 当前版本状态
 
-V0.9 UI 重构和浏览器验收已完成；V1.0 未开始。当前范围止于 V0.9。
+V0.9 UI 重构和浏览器验收已完成；V1.0.0 增加 Electron 桌面封装、离线 Three.js 资源与 Windows 安装/便携版发行流程，机械臂仿真功能保持不变。
 
 ## 5. 关键技术
 
@@ -49,7 +49,7 @@ HTML/CSS/原生 JavaScript、Three.js 0.186.0、WebGL 2、OrbitControls、Transf
 
 ## 6. 已知问题
 
-- Three.js 及控件从 jsDelivr 加载，运行需要网络和支持 WebGL 2 的现代浏览器；无离线依赖包。
+- 浏览器版 Three.js 及控件从 jsDelivr 加载，需网络；桌面版将其打包在应用内。两种运行方式都需要支持 WebGL 2 的显卡和驱动。
 - `file://` 下的 Edge 启动和显示尚未验收。
 - V0.9 本轮全部 JavaScript 文件通过 `node --check`，`node --test scripts/kinematics.test.mjs` 8 项通过；localhost 浏览器已验收卡片、模式、场景、关节、IK、传感器、抓取和布局刷新恢复。
 - 传感器读数是简化估算，不代表真实硬件数据。
@@ -57,12 +57,12 @@ HTML/CSS/原生 JavaScript、Three.js 0.186.0、WebGL 2、OrbitControls、Transf
 ## 7. 下一步
 
 1. Windows 桌面版采用 Electron；桌面启动时使用打包内 Three.js，浏览器版仍可通过 jsDelivr 启动。
-2. GitHub Actions 在推送匹配版本的 `v*` 标签后构建 Windows x64 安装版与便携版，并创建 Draft Release；正式公开发行前需人工检查并发布草稿。
-3. Electron 桌面启动、Windows 安装与便携版运行仍需在 Windows 环境验收。
+2. GitHub Actions 在推送匹配版本的 `v*` 标签后构建 Windows x64 安装版与便携版，并上传发行附件。
+3. 当前用户授权在完成测试后正式发布 v1.0.0；发布前应核验 Windows CI、产物和校验文件。
 
 ## 8. 约束与注意事项
 
-- 遵循用户对外部发布的明确授权；未经确认不得公开发布 GitHub Release。
+- 遵循用户对外部发布的明确授权；当前已授权在测试通过后公开发布 v1.0.0。
 - 保持六轴手动控制、关节限位、FK/IK 和抓取流程稳定；改动前先检查现有实现。
 - 保留 `file://` 启动能力：不要把本地 IIFE 脚本加载改回 ES module；外部 Three.js 仍需联网。
 - Electron 使用安全自定义应用协议、隔离渲染进程和本地 Three.js 资源；不启动网络监听端口，也不启用 `nodeIntegration`。
