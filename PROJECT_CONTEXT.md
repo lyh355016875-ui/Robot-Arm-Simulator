@@ -58,11 +58,11 @@ HTML/CSS/原生 JavaScript、Three.js 0.186.0、WebGL 2、OrbitControls、Transf
 
 1. Windows 桌面版采用 Electron；桌面启动时使用打包内 Three.js，浏览器版仍可通过 jsDelivr 启动。
 2. GitHub Actions 在推送匹配版本的 `v*` 标签后构建 Windows x64 安装版与便携版，并上传发行附件。
-3. 当前用户授权在完成测试后正式发布 v1.0.0；发布前应核验 Windows CI、产物和校验文件。
+3. v1.0.0 已通过测试并于 2026-10-03 在 GitHub 正式公开发布；Windows x64 安装版、便携版及 SHA-256 清单均已上传。
 
 ## 8. 约束与注意事项
 
-- 遵循用户对外部发布的明确授权；当前已授权在测试通过后公开发布 v1.0.0。
+- 遵循用户对外部发布的明确授权；v1.0.0 已公开发布，后续版本仍须按用户授权操作。
 - 保持六轴手动控制、关节限位、FK/IK 和抓取流程稳定；改动前先检查现有实现。
 - 保留 `file://` 启动能力：不要把本地 IIFE 脚本加载改回 ES module；外部 Three.js 仍需联网。
 - Electron 使用安全自定义应用协议、隔离渲染进程和本地 Three.js 资源；不启动网络监听端口，也不启用 `nodeIntegration`。

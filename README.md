@@ -123,7 +123,14 @@ npm run pack:dir      # 打包当前操作系统目录，用于检查打包配�
 npm run dist:win      # 在 Windows 上构建 x64 安装版和便携版
 ```
 
-Windows 发行版包含可选择安装目录并创建快捷方式的安装程序，以及无需安装的便携版。构建输出位于 `release/`。目前没有代码签名证书，Windows SmartScreen 可能对新发布的程序显示未签名提示。应用仍需要具备 WebGL 2 的显卡和驱动。
+Windows 发行版包含可选择安装目录并创建快捷方式的安装程序，以及无需安装的便携版。应用仍需要具备 WebGL 2 的显卡和驱动；首次运行时 Windows SmartScreen 可能显示下载来源警告，可使用发布页的 SHA-256 校验文件核对安装包。
+
+### v1.0.0 下载
+
+- [GitHub Release 页面](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.0.0)
+- [Windows x64 安装版](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/Robot-Arm-Simulator-1.0.0-win-x64.exe)
+- [Windows x64 便携版](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/Robot-Arm-Simulator-1.0.0-portable-x64.exe)
+- [SHA-256 校验清单](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/SHA256SUMS.txt)
 
 ### GitHub Releases
 
