@@ -2,7 +2,7 @@
 
 [简体中文](README.md) | **English**
 
-A 3D workbench for simulating a six-axis robot arm, with joint controls, forward/inverse kinematics, pick-and-place, and a configurable card-based UI. Current release: **v1.0.0**.
+A Three.js six-axis robot arm simulator for the browser and Windows desktop, featuring forward/inverse kinematics, joint control, pick-and-place, and live end-effector pose feedback. Current release: **v1.0.0**.
 
 ## Download the Windows desktop app
 
