@@ -1,0 +1,33 @@
+flowchart LR
+  Browser["浏览器入口<br/>index.html + jsDelivr"]
+  Desktop["Electron 主进程<br/>robotarm:// + 本地 Three.js"]
+  Entry["index.html<br/>模块引导 / Three.js"]
+  Bootstrap["src/main.js<br/>对象装配 / 动画循环"]
+
+  Browser --> Entry
+  Desktop --> Entry
+  Entry --> Bootstrap
+
+  subgraph Runtime["应用模块"]
+    Render["scene.js<br/>camera.js / renderer.js"]
+    Model["robot/<br/>RobotArm / Workbench"]
+    Kinematics["kinematics/<br/>矩阵 / FK / IK"]
+    Controls["controller/<br/>关节 / 键盘 / 目标 / 抓取"]
+    Workspace["ui/<br/>卡片 / 布局 / 工作台"]
+    Sensors["RobotSensors.js<br/>模拟传感器"]
+  end
+
+  Bootstrap --> Render
+  Bootstrap --> Model
+  Bootstrap --> Controls
+  Bootstrap --> Workspace
+  Bootstrap --> Sensors
+  Controls --> Kinematics
+  Controls --> Model
+  Sensors --> Model
+  Workspace --> Controls
+
+  Tests["scripts/kinematics.test.mjs<br/>Node 测试"] --> Kinematics
+  Tests --> Controls
+  CI["GitHub Actions<br/>安装 / 测试 / Windows 打包"] --> Tests
+  CI --> Release["Draft Release<br/>Windows x64 安装版 / 便携版 / SHA-256"]

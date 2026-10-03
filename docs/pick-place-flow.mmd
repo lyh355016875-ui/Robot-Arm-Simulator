@@ -1,0 +1,32 @@
+flowchart LR
+  subgraph Detect["目标识别"]
+    direction TB
+    Idle["IDLE<br/>待机"] -->|有工件| Scan["SCAN<br/>扫描工作台"]
+    Scan --> Found{"发现可抓工件？"}
+  end
+
+  subgraph Picking["接近与抓取"]
+    direction TB
+    Move["MOVE<br/>逆解并移动到抓取位"] --> Grab["GRAB<br/>闭合夹爪 / 附着工件"]
+  end
+
+  subgraph Placing["放置与收尾"]
+    direction TB
+    Place["PLACE<br/>规划放置位"] --> Reach{"放置位 IK 可达？"}
+    Reach -->|可达| Release["打开夹爪并放置"]
+    Reach -->|不可达| Fallback["尝试安全放置位"]
+    Fallback --> Safe{"安全位可达？"}
+    Safe -->|是| Release
+    Safe -->|否| Held["停止并保留夹持工件"]
+  end
+
+  Found -->|是| Move
+  Found -->|否| Done["处理完成<br/>回到 IDLE"]
+  Move -->|IK 失败| Skip["标记失败并跳过工件"]
+  Skip --> Scan
+  Grab --> Place
+  Release --> More{"还有待处理工件？"}
+  More -->|是| Scan
+  More -->|否| Done
+  Held --> Recover["手动安全放置"]
+  Recover --> Done
