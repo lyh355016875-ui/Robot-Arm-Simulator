@@ -50,6 +50,7 @@ HTML/CSS/原生 JavaScript、Three.js 0.186.0、WebGL 2、OrbitControls、Transf
 ## 6. 已知问题
 
 - 浏览器版 Three.js 及控件从 jsDelivr 加载，需网络；桌面版将其打包在应用内。两种运行方式都需要支持 WebGL 2 的显卡和驱动。
+- v1.0.0 已发布的 Windows 安装版和便携版均没有 Authenticode 签名（已用 `osslsigncode verify` 检查）；当前 GitHub Actions 未配置签名身份，因此可能触发 SmartScreen 未知发布者提示。未来签名须经用户选定方案并配置凭据后再发布。
 - `file://` 下的 Edge 启动和显示尚未验收。
 - V0.9 本轮全部 JavaScript 文件通过 `node --check`，`node --test scripts/kinematics.test.mjs` 8 项通过；localhost 浏览器已验收卡片、模式、场景、关节、IK、传感器、抓取和布局刷新恢复。
 - 传感器读数是简化估算，不代表真实硬件数据。
