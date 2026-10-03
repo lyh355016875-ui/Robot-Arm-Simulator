@@ -18,13 +18,13 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 ```
 
 将输出与 `SHA256SUMS.txt` 中对应的哈希比较。
-哈希比对用于检查文件完整性，不能代替代码签名或证明发布者身份。
 
 ## 项目目录
 
 ```text
 .
 ├── assets/                 # 静态资源
+├── docs/screenshots/       # README 界面截图
 ├── electron/               # 桌面主进程与 preload
 ├── scripts/                # 本地服务器与自动化测试
 ├── src/
@@ -47,6 +47,17 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 
 > 传感器、视觉检测和通信事件均为仿真，不连接真实机械臂或真实传感器。
 
+## 界面截图
+
+![Windows 桌面版主工作台：六轴关节控制、机器人状态与 3D 场景](docs/screenshots/desktop-workbench.png)
+
+主工作台展示机械臂三维场景、关节控制面板和实时位姿状态。
+
+![自动抓取场景：任务管理、目标物设置与机械臂工作台](docs/screenshots/desktop-grab-task.png)
+
+抓取视图展示任务状态、目标物设置，以及工作台上的仿真工件。
+截图在虚拟软件渲染环境中采集，界面角落的 FPS 数值不代表一般用户设备上的运行表现。
+
 ## 技术栈
 
 - **浏览器端：** HTML、CSS、原生 JavaScript、Three.js 0.186.0、WebGL 2。
@@ -67,12 +78,6 @@ npm run dist:win      # 在 Windows 上构建安装版和便携版
 ```
 
 GitHub Actions 会在推送与 `package.json` 版本一致的 `v*` 标签后运行测试、构建 Windows x64 发行文件并生成 SHA-256 清单；新版本先上传为草稿 Release，之后需由维护者发布。
-
-## 关于 SmartScreen
-
-**V1.0.0 的安装版和便携版均未进行 Authenticode 代码签名。** Windows SmartScreen 可能显示“Windows 已保护你的电脑”或未知发布者提示。请仅从本仓库 Release 下载，并先核对 SHA-256；不要为了运行本软件而关闭系统 SmartScreen 防护。
-
-降低未来版本警告的办法是用可信代码签名身份对每个发布版的程序文件持续签名，并保持发布者身份一致。**签名也不保证新应用首次运行完全无提示**：SmartScreen 仍需建立文件或发布者信誉；EV 证书已不再自动绕过这段信誉建立过程。微软文档列出的最可靠免 SmartScreen 下载警告方案是通过 Microsoft Store 分发 MSIX 包（需另行适配并通过商店流程）。详见 [SmartScreen 信誉说明](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation) 和[代码签名选项](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options)。
 
 ## 许可证
 

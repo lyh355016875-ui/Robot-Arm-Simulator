@@ -18,13 +18,13 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 ```
 
 Compare the result with the matching entry in `SHA256SUMS.txt`.
-This checks file integrity; it does not replace code signing or authenticate the publisher.
 
 ## Project structure
 
 ```text
 .
 ├── assets/                 # Static assets
+├── docs/screenshots/       # README interface screenshots
 ├── electron/               # Desktop main process and preload
 ├── scripts/                # Local server and automated tests
 ├── src/
@@ -47,6 +47,17 @@ This checks file integrity; it does not replace code signing or authenticate the
 
 > Sensors, vision, and communication events are simulated; the app does not connect to a physical robot or real sensors.
 
+## Screenshots
+
+![Windows desktop main workbench with six-axis controls, robot status, and 3D scene](docs/screenshots/desktop-workbench.png)
+
+The main workbench shows the 3D robot scene, joint controls, and live pose feedback.
+
+![Pick-and-place scene with task controls, object settings, and simulated workpieces](docs/screenshots/desktop-grab-task.png)
+
+The pick-and-place view shows task status, object settings, and simulated parts on the workbench.
+Screenshots were captured with software rendering in a virtual environment; the displayed FPS is not representative of typical user hardware.
+
 ## Technology
 
 - **Browser:** HTML, CSS, vanilla JavaScript, Three.js 0.186.0, and WebGL 2.
@@ -67,12 +78,6 @@ npm run dist:win      # Build the installer and portable app on Windows
 ```
 
 GitHub Actions tests and builds the Windows x64 packages, then generates SHA-256 checksums when a `v*` tag matches the version in `package.json`. New releases are uploaded as drafts for a maintainer to review and publish.
-
-## SmartScreen and code signing
-
-**The v1.0.0 installer and portable executable are not Authenticode-signed.** Windows SmartScreen may show “Windows protected your PC” or an unknown-publisher warning. Download only from this repository’s Release page and verify the SHA-256 checksum first. Do not disable SmartScreen to run this app.
-
-To reduce warnings in future releases, sign every executable with a trusted code-signing identity and keep the publisher identity consistent. **Signing still does not guarantee a warning-free first run**: SmartScreen reputation takes time to build, and EV certificates no longer bypass that process automatically. Microsoft’s most reliable documented way to avoid SmartScreen download warnings is distributing an MSIX package through the Microsoft Store, which requires separate packaging and store submission. See Microsoft’s [SmartScreen reputation guidance](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation) and [code-signing options](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/code-signing-options).
 
 ## License
 
