@@ -7,8 +7,8 @@
 
   const TABLE_CENTER = new THREE.Vector3(2.35, 0, -0.2);
   const TABLE_TOP = 0.9;
-  const PART_TYPES = ['cube', 'sphere', 'workpiece'];
-  const PART_NAMES = { cube: '方块', sphere: '球体', workpiece: '工件' };
+  const PART_TYPES = ['cube', 'sphere', 'cylinder', 'workpiece'];
+  const PART_NAMES = { cube: '方块', sphere: '球体', cylinder: '圆柱', workpiece: '工件' };
   const PART_COLORS = ['#ed9c49', '#55b9cf', '#cb6d72', '#92bd75', '#b38dd0'];
 
   function addBox(parent, name, size, position, material) {
@@ -27,9 +27,24 @@
       this.scene = scene;
       this.group = new THREE.Group();
       this.group.name = 'Industrial Workbench';
+      this.structureGroup = new THREE.Group();
+      this.structureGroup.name = 'Workbench Structure';
+      this.group.add(this.structureGroup);
+      this.visionStructureGroup = new THREE.Group();
+      this.visionStructureGroup.name = 'Workbench Vision Gantry';
+      this.structureGroup.add(this.visionStructureGroup);
+      this.workpiecesGroup = new THREE.Group();
+      this.workpiecesGroup.name = 'Workbench Workpieces';
+      this.group.add(this.workpiecesGroup);
+      this.placementGroup = new THREE.Group();
+      this.placementGroup.name = 'Placement Zone Helpers';
+      this.placementGroup.visible = false;
+      this.group.add(this.placementGroup);
       this.workpieces = [];
       this.nextId = 1;
       this.placementIndex = 0;
+      this.benchMode = 'industrial';
+      this.targetMode = 'none';
       this.raycaster = new THREE.Raycaster();
       this.scene.add(this.group);
       this.createTable();
@@ -41,32 +56,33 @@
       const cx = TABLE_CENTER.x;
       const cz = TABLE_CENTER.z;
       const graphite = new THREE.MeshStandardMaterial({ color: '#25364a', metalness: 0.62, roughness: 0.39 });
+      this.tableMaterial = graphite;
       const steel = new THREE.MeshStandardMaterial({ color: '#849caf', metalness: 0.72, roughness: 0.3 });
       const darkSteel = new THREE.MeshStandardMaterial({ color: '#435a6d', metalness: 0.72, roughness: 0.34 });
       const safety = new THREE.MeshStandardMaterial({ color: '#dcae4d', metalness: 0.38, roughness: 0.44 });
 
-      addBox(this.group, 'Workbench Steel Top', [3.8, 0.16, 2.6], [cx, TABLE_TOP - 0.08, cz], graphite);
-      addBox(this.group, 'Workbench Front Safety Rail', [3.84, 0.025, 0.045], [cx, TABLE_TOP - 0.012, cz + 1.29], safety);
-      addBox(this.group, 'Workbench Rear Safety Rail', [3.84, 0.025, 0.045], [cx, TABLE_TOP - 0.012, cz - 1.29], safety);
+      this.tableTop = addBox(this.structureGroup, 'Workbench Steel Top', [3.8, 0.16, 2.6], [cx, TABLE_TOP - 0.08, cz], graphite);
+      addBox(this.structureGroup, 'Workbench Front Safety Rail', [3.84, 0.025, 0.045], [cx, TABLE_TOP - 0.012, cz + 1.29], safety);
+      addBox(this.structureGroup, 'Workbench Rear Safety Rail', [3.84, 0.025, 0.045], [cx, TABLE_TOP - 0.012, cz - 1.29], safety);
 
       for (const xOffset of [-1.68, 1.68]) {
         for (const zOffset of [-1.08, 1.08]) {
-          addBox(this.group, 'Workbench Leg', [0.11, 0.82, 0.11], [cx + xOffset, 0.41, cz + zOffset], steel);
+          addBox(this.structureGroup, 'Workbench Leg', [0.11, 0.82, 0.11], [cx + xOffset, 0.41, cz + zOffset], steel);
         }
       }
-      addBox(this.group, 'Workbench Lower Front Brace', [3.35, 0.075, 0.075], [cx, 0.35, cz + 1.08], darkSteel);
-      addBox(this.group, 'Workbench Lower Rear Brace', [3.35, 0.075, 0.075], [cx, 0.35, cz - 1.08], darkSteel);
-      addBox(this.group, 'Workbench Side Brace A', [0.075, 0.075, 2.15], [cx - 1.68, 0.35, cz], darkSteel);
-      addBox(this.group, 'Workbench Side Brace B', [0.075, 0.075, 2.15], [cx + 1.68, 0.35, cz], darkSteel);
+      addBox(this.structureGroup, 'Workbench Lower Front Brace', [3.35, 0.075, 0.075], [cx, 0.35, cz + 1.08], darkSteel);
+      addBox(this.structureGroup, 'Workbench Lower Rear Brace', [3.35, 0.075, 0.075], [cx, 0.35, cz - 1.08], darkSteel);
+      addBox(this.structureGroup, 'Workbench Side Brace A', [0.075, 0.075, 2.15], [cx - 1.68, 0.35, cz], darkSteel);
+      addBox(this.structureGroup, 'Workbench Side Brace B', [0.075, 0.075, 2.15], [cx + 1.68, 0.35, cz], darkSteel);
 
       // Rear camera gantry stays outside the robot's pick and place corridor.
       const gantry = new THREE.MeshStandardMaterial({ color: '#617a8d', metalness: 0.74, roughness: 0.28 });
-      addBox(this.group, 'Vision Gantry Upright', [0.08, 2.35, 0.08], [cx + 1.73, TABLE_TOP + 1.16, cz - 1.17], gantry);
-      addBox(this.group, 'Vision Gantry Boom', [2.35, 0.08, 0.08], [cx + 0.53, TABLE_TOP + 2.29, cz - 1.17], gantry);
+      addBox(this.visionStructureGroup, 'Vision Gantry Upright', [0.08, 2.35, 0.08], [cx + 1.73, TABLE_TOP + 1.16, cz - 1.17], gantry);
+      addBox(this.visionStructureGroup, 'Vision Gantry Boom', [2.35, 0.08, 0.08], [cx + 0.53, TABLE_TOP + 2.29, cz - 1.17], gantry);
 
       const cameraBody = new THREE.MeshStandardMaterial({ color: '#273a4d', metalness: 0.48, roughness: 0.3 });
       const cameraAccent = new THREE.MeshStandardMaterial({ color: '#50cad7', emissive: '#0b4249', emissiveIntensity: 0.65 });
-      const cameraHousing = addBox(this.group, 'Vision Camera Housing', [0.26, 0.18, 0.2], [cx + 0.36, 3.06, cz - 0.74], cameraBody);
+      const cameraHousing = addBox(this.visionStructureGroup, 'Vision Camera Housing', [0.26, 0.18, 0.2], [cx + 0.36, 3.06, cz - 0.74], cameraBody);
       const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.14, 24), cameraAccent);
       lens.name = 'Vision Camera Lens';
       lens.position.set(cx + 0.36, 2.91, cz - 0.74);
@@ -75,7 +91,7 @@
       const led = new THREE.Mesh(new THREE.SphereGeometry(0.026, 12, 10), cameraAccent);
       led.name = 'Vision Camera Status LED';
       led.position.set(cx + 0.43, 3.07, cz - 0.635);
-      this.group.add(led);
+      this.visionStructureGroup.add(led);
     }
 
     createPlacementZone() {
@@ -84,14 +100,14 @@
       zone.name = 'Placement Zone';
       zone.rotation.x = -Math.PI / 2;
       zone.position.set(3.1, TABLE_TOP + 0.008, TABLE_CENTER.z);
-      this.group.add(zone);
+      this.placementGroup.add(zone);
 
       const trayMaterial = new THREE.MeshStandardMaterial({ color: '#385f5b', metalness: 0.36, roughness: 0.54 });
       const rimMaterial = new THREE.MeshStandardMaterial({ color: '#60c9a8', metalness: 0.45, roughness: 0.35 });
       for (let index = 0; index < 5; index += 1) {
         const z = TABLE_CENTER.z - 0.88 + index * 0.44;
-        addBox(this.group, 'Placement Tray ' + (index + 1), [0.58, 0.035, 0.38], [3.1, TABLE_TOP + 0.018, z], trayMaterial);
-        addBox(this.group, 'Placement Tray Marker ' + (index + 1), [0.48, 0.008, 0.018], [3.1, TABLE_TOP + 0.04, z - 0.15], rimMaterial);
+        addBox(this.placementGroup, 'Placement Tray ' + (index + 1), [0.58, 0.035, 0.38], [3.1, TABLE_TOP + 0.018, z], trayMaterial);
+        addBox(this.placementGroup, 'Placement Tray Marker ' + (index + 1), [0.48, 0.008, 0.018], [3.1, TABLE_TOP + 0.04, z - 0.15], rimMaterial);
       }
     }
 
@@ -106,31 +122,96 @@
     }
 
     getAvailableWorkpieces() {
-      return this.workpieces.filter((part) => part.status === 'available');
+      return this.workpieces.filter((part) => part.status === 'available' && part.grabbable !== false);
+    }
+
+    setBenchMode(mode) {
+      if (!['basic', 'industrial', 'lab', 'blank'].includes(mode)) return false;
+      this.benchMode = mode;
+      this.group.visible = true;
+      this.structureGroup.visible = mode !== 'blank';
+      this.visionStructureGroup.visible = mode === 'industrial' || mode === 'lab';
+      this.tableMaterial.color.set(mode === 'lab' ? '#30445a' : mode === 'basic' ? '#39485a' : '#25364a');
+      this.placementGroup.visible = this.targetMode === 'grabTask';
+      this.visionCamera.visible = mode === 'industrial' || mode === 'lab';
+      return true;
+    }
+
+    setTargetMode(mode) {
+      if (!['none', 'single', 'multiple', 'random', 'grabTask'].includes(mode)) return false;
+      this.clearWorkpieces();
+      this.targetMode = mode;
+      this.placementIndex = 0;
+      if (mode === 'single') this.spawnConfiguredWorkpieces({ type: 'cube', count: 1, random: false, color: '#55b9cf' });
+      if (mode === 'multiple') this.spawnConfiguredWorkpieces({ type: 'cube', count: 5, random: false, color: '#ed9c49' });
+      if (mode === 'random' || mode === 'grabTask') this.spawnConfiguredWorkpieces({ count: 5, random: true });
+      this.placementGroup.visible = mode === 'grabTask' && this.benchMode !== 'blank';
+      return true;
+    }
+
+    setDimensions(width, depth) {
+      const safeWidth = THREE.MathUtils.clamp(Number(width) || 3.8, 1, 8);
+      const safeDepth = THREE.MathUtils.clamp(Number(depth) || 2.6, 1, 6);
+      const resizeBox = (name, size, position) => {
+        const object = this.structureGroup.children.find((child) => child.name === name);
+        if (!object) return;
+        object.geometry.dispose();
+        object.geometry = new THREE.BoxGeometry(...size);
+        if (position) object.position.set(...position);
+      };
+      resizeBox('Workbench Steel Top', [safeWidth, 0.16, safeDepth], [TABLE_CENTER.x, TABLE_TOP - 0.08, TABLE_CENTER.z]);
+      resizeBox('Workbench Front Safety Rail', [safeWidth + 0.04, 0.025, 0.045], [TABLE_CENTER.x, TABLE_TOP - 0.012, TABLE_CENTER.z + safeDepth / 2 - 0.01]);
+      resizeBox('Workbench Rear Safety Rail', [safeWidth + 0.04, 0.025, 0.045], [TABLE_CENTER.x, TABLE_TOP - 0.012, TABLE_CENTER.z - safeDepth / 2 + 0.01]);
+      const legs = this.structureGroup.children.filter((child) => child.name === 'Workbench Leg');
+      const legOffsets = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+      legs.forEach((leg, index) => leg.position.set(TABLE_CENTER.x + legOffsets[index][0] * (safeWidth / 2 - 0.22), 0.41, TABLE_CENTER.z + legOffsets[index][1] * (safeDepth / 2 - 0.22)));
+      resizeBox('Workbench Lower Front Brace', [safeWidth - 0.45, 0.075, 0.075], [TABLE_CENTER.x, 0.35, TABLE_CENTER.z + safeDepth / 2 - 0.22]);
+      resizeBox('Workbench Lower Rear Brace', [safeWidth - 0.45, 0.075, 0.075], [TABLE_CENTER.x, 0.35, TABLE_CENTER.z - safeDepth / 2 + 0.22]);
+      resizeBox('Workbench Side Brace A', [0.075, 0.075, safeDepth - 0.45], [TABLE_CENTER.x - safeWidth / 2 + 0.22, 0.35, TABLE_CENTER.z]);
+      resizeBox('Workbench Side Brace B', [0.075, 0.075, safeDepth - 0.45], [TABLE_CENTER.x + safeWidth / 2 - 0.22, 0.35, TABLE_CENTER.z]);
+      this.collisionHelper?.update();
+      return { width: safeWidth, depth: safeDepth };
+    }
+
+    setCollisionHelpers(visible) {
+      if (!this.collisionHelper) {
+        this.collisionHelper = new THREE.BoxHelper(this.tableTop, '#efb45c');
+        this.collisionHelper.name = 'Workbench Collision Helper';
+        this.collisionHelper.visible = false;
+        this.structureGroup.add(this.collisionHelper);
+      }
+      this.collisionHelper.visible = Boolean(visible) && this.benchMode !== 'blank';
+      this.collisionHelper.update();
     }
 
     spawnRandomWorkpieces(count = 5) {
       if (this.workpieces.some((part) => part.status === 'held')) throw new Error('夹爪仍持有工件，不能重置工作台。');
+      return this.spawnConfiguredWorkpieces({ count: Math.min(8, Math.max(1, Math.floor(count))), random: true });
+    }
+
+    spawnConfiguredWorkpieces({ type = 'cube', count = 1, color = null, random = false, position = null, grabbable = true } = {}) {
+      if (this.workpieces.some((part) => part.status === 'held')) throw new Error('夹爪仍持有工件，不能重置工作台。');
       this.clearWorkpieces();
       this.placementIndex = 0;
-      const positions = [];
-      const amount = Math.max(1, Math.min(8, Math.floor(count)));
-
+      const amount = THREE.MathUtils.clamp(Math.floor(Number(count) || 1), 1, 20);
+      const validType = ['cube', 'sphere', 'workpiece'].includes(type) ? type : 'workpiece';
+      const origin = position || { x: TABLE_CENTER.x, y: TABLE_TOP + 0.12, z: TABLE_CENTER.z };
       for (let index = 0; index < amount; index += 1) {
-        let x;
-        let z;
-        let attempt = 0;
-        do {
-          x = TABLE_CENTER.x - 0.42 + Math.random() * 0.88;
-          z = TABLE_CENTER.z - 0.83 + Math.random() * 1.66;
-          attempt += 1;
-        } while (attempt < 36 && positions.some((point) => Math.hypot(point.x - x, point.z - z) < 0.44));
-        positions.push({ x, z });
-
-        const type = PART_TYPES[Math.floor(Math.random() * PART_TYPES.length)];
-        const entity = this.createWorkpiece(type, index);
-        entity.object3D.position.set(x, TABLE_TOP + entity.height / 2, z);
-        this.group.add(entity.object3D);
+        const entityType = random ? PART_TYPES[Math.floor(Math.random() * PART_TYPES.length)] : validType;
+        const entity = this.createWorkpiece(entityType, index);
+        if (color && !random) entity.material.color.set(color);
+        entity.grabbable = Boolean(grabbable);
+        if (!entity.grabbable) entity.status = 'fixed';
+        const columns = Math.min(5, amount);
+        const row = Math.floor(index / columns);
+        const column = index % columns;
+        const spreadX = (column - (Math.min(columns, amount - row * columns) - 1) / 2) * 0.31;
+        const spreadZ = (row - (Math.ceil(amount / columns) - 1) / 2) * 0.36;
+        const x = random ? TABLE_CENTER.x - 0.45 + Math.random() * 0.9 : Number(origin.x) + spreadX;
+        const y = Number(origin.y) || TABLE_TOP + entity.height / 2;
+        const z = random ? TABLE_CENTER.z - 0.78 + Math.random() * 1.56 : Number(origin.z) + spreadZ;
+        entity.object3D.position.set(x, y, z);
+        this.workpiecesGroup.add(entity.object3D);
         this.workpieces.push(entity);
       }
       this.scene.updateMatrixWorld(true);
@@ -150,10 +231,13 @@
       if (type === 'cube') {
         height = 0.23;
         mesh = new THREE.Mesh(new THREE.BoxGeometry(0.23, height, 0.23), material);
-      } else if (type === 'sphere') {
-        height = 0.25;
-        mesh = new THREE.Mesh(new THREE.SphereGeometry(height / 2, 24, 18), material);
-      } else {
+        } else if (type === 'sphere') {
+          height = 0.25;
+          mesh = new THREE.Mesh(new THREE.SphereGeometry(height / 2, 24, 18), material);
+        } else if (type === 'cylinder') {
+          height = 0.24;
+          mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, height, 24), material);
+        } else {
         height = 0.24;
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.2, 28), material);
         const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.035, 28), material);
@@ -174,12 +258,13 @@
       mesh.receiveShadow = true;
       object3D.add(mesh);
 
-      const entity = { id, index, type, label: PART_NAMES[type], height, object3D, status: 'available', material };
+      const entity = { id, index, type, label: PART_NAMES[type], height, object3D, status: 'available', grabbable: true, material };
       object3D.userData.workpiece = entity;
       return entity;
     }
 
     clearWorkpieces() {
+      if (this.workpieces.some((part) => part.status === 'held')) throw new Error('夹爪仍持有工件，无法清除目标物。');
       for (const part of this.workpieces) {
         if (part.object3D.parent) part.object3D.parent.remove(part.object3D);
         part.object3D.traverse((object) => object.geometry?.dispose?.());
@@ -239,7 +324,7 @@
     place(part) {
       if (!part || part.status !== 'held') throw new Error('夹爪没有持有该工件。');
       const pose = this.getPlacementPose(part);
-      this.group.attach(part.object3D);
+      this.workpiecesGroup.attach(part.object3D);
       part.object3D.position.set(pose.position.x, pose.position.y, pose.position.z);
       part.object3D.rotation.set(0, 0, 0);
       part.status = 'placed';

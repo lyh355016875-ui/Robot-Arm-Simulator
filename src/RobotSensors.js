@@ -101,7 +101,7 @@
     }
 
     renderCamera() {
-      if (!this.cameraRenderer || !this.panel.open) return;
+      if (!this.cameraRenderer || this.panel.dataset.collapsed === 'true' || this.panel.hidden || !this.panel.isConnected) return;
       const bounds = this.cameraCanvas.getBoundingClientRect();
       if (!bounds.width || !bounds.height) return;
       if (Math.abs(this.cameraCanvas.width / this.cameraRenderer.getPixelRatio() - bounds.width) > 1

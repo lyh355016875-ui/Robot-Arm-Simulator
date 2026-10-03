@@ -37,11 +37,13 @@
           </span>
         </a>
 
+        <nav id="workspace-menu-bar" class="workspace-menu-bar" aria-label="主菜单栏"></nav>
+
         <div class="topbar-center" aria-label="当前版本">
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.8</span>
+          <span class="version-label">V0.9</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -69,7 +71,8 @@
             <span class="card-ready is-starting" id="renderer-state"><span></span><span id="renderer-state-label">STARTING</span></span>
           </div>
 
-          <details class="joint-panel" aria-label="六轴机械臂关节角度控制" open>
+          <div id="card-layer" class="card-layer" aria-label="机器人工作台卡片层">
+          <details class="joint-panel" data-card-id="robotControl" data-card-title="机器人控制" aria-label="六轴机械臂关节角度控制" open>
             <summary class="joint-panel-heading panel-summary">
               <div>
                 <span class="card-label">JOINT CONTROL</span>
@@ -109,28 +112,12 @@
             </label>
             <p class="keyboard-help"><span>键盘微调</span> J1 A/D · J2 S/W · J3 F/R · J4 G/T · J5 H/Y · J6 J/U <kbd>Shift</kbd> 10°</p>
 
-            <details class="task-control" aria-label="自动抓取任务控制">
-              <summary class="task-control-heading panel-summary">
-                <div><span class="card-label">PICK &amp; PLACE</span><h3>自动抓取</h3></div>
-                <span id="task-state" class="task-state" data-state="idle">IDLE</span>
-              </summary>
-              <div class="task-control-body">
-              <div class="task-buttons">
-                <button id="spawn-workpieces" type="button">随机生成</button>
-                <button id="start-pick-place" class="task-start-button" type="button">开始抓取</button>
-                <button id="stop-pick-place" class="task-stop-button" type="button" disabled>停止</button>
-              </div>
-              <button id="release-held-part" class="task-recovery-button" type="button" disabled>安全放置夹爪中的工件</button>
-              <div class="task-log-heading"><span>任务日志</span><span>视觉 · 运动 · 夹爪</span></div>
-              <ol id="task-log" class="task-log" aria-live="polite" aria-relevant="additions"></ol>
-              </div>
-            </details>
           </details>
 
-          <details class="pose-panel" aria-label="末端实时姿态和坐标" aria-live="polite">
+          <details class="pose-panel" data-card-id="robotStatus" data-card-title="机器人状态" aria-label="末端实时姿态和坐标" aria-live="polite">
             <summary class="pose-panel-heading panel-summary">
-              <div><span class="card-label">TOOL FEEDBACK</span><h2>当前姿态与坐标</h2></div>
-              <span class="feedback-dot" aria-hidden="true"></span>
+              <div><span class="card-label">ROBOT STATUS · TOOL FEEDBACK</span><h2>机器人状态与姿态</h2></div>
+              <span id="robot-status-badge" class="robot-status-badge" data-status="ready">READY</span>
             </summary>
             <div class="pose-group">
               <h3>坐标 XYZ <span>米</span></h3>
@@ -151,7 +138,7 @@
             </div>
           </details>
 
-          <details class="target-panel" aria-label="逆运动学目标控制">
+          <details class="target-panel" data-card-id="ikControl" data-card-title="IK 控制" aria-label="逆运动学目标控制">
             <summary class="target-panel-heading panel-summary">
               <div><span class="card-label">INVERSE KINEMATICS</span><h2>末端目标</h2></div>
               <span class="target-badge">IK</span>
@@ -173,10 +160,10 @@
             <p id="target-status" class="target-status" role="status" aria-live="polite">拖动场景中的目标球，或输入目标位姿。</p>
           </details>
 
-          <details id="sensor-panel" class="sensor-panel" aria-label="机器人状态与传感器">
+          <details id="sensor-panel" class="sensor-panel" data-card-id="sensors" data-card-title="传感器监视" aria-label="机器人状态与传感器">
             <summary class="sensor-panel-heading panel-summary">
               <div><span class="card-label">ROBOT TELEMETRY</span><h2>机器人状态与传感器</h2></div>
-              <span id="robot-status-badge" class="robot-status-badge" data-status="ready">READY</span>
+              <span class="sensor-online">SIM</span>
             </summary>
             <div class="sensor-panel-content">
               <section class="sensor-section" aria-label="机械臂视角相机">
@@ -217,6 +204,7 @@
               <p class="sensor-footnote">读数由当前场景、姿态和简化动力学模型估算，不代表真实硬件测量。</p>
             </div>
           </details>
+          </div>
 
           <div class="viewport-footer">
             <div class="world-status">
@@ -293,6 +281,8 @@
       window.TransformControls = transformControls.TransformControls;
 
       const scripts = [
+        './src/ui/Card.js', './src/ui/LayoutManager.js', './src/ui/CardManager.js',
+        './src/ui/Workspace.js', './src/ui/MenuBar.js', './src/ui/MonitorCards.js', './src/ui/WorkspaceManager.js',
         './src/scene.js', './src/camera.js', './src/renderer.js',
         './src/kinematics/matrix.js', './src/kinematics/forward.js', './src/kinematics/inverse.js',
         './src/robot/Joint.js', './src/robot/Link.js', './src/robot/EndEffector.js', './src/robot/RobotArm.js',

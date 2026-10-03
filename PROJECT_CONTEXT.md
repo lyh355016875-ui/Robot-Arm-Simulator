@@ -2,79 +2,68 @@
 
 ## 1. 项目目标
 
-开发可在浏览器中运行的 3D 六轴机械臂实验平台，支持关节控制、姿态反馈、逆运动学、自动抓取和传感器仿真。当前版本 V0.8。
+在浏览器中开发 3D 六轴工业机械臂模拟器，支持关节控制、FK/IK、自动抓取、传感器仿真，以及可配置卡片式数字工作台。当前版本：V0.9；V0.8 基线提交 `3358ca3`。
 
 ## 2. 当前目录结构
 
 ```text
 Robot-Arm-Simulator/
-├── index.html
+├── index.html                 # 页面和经典脚本加载顺序
+├── PROJECT_CONTEXT.md
 ├── README.md
 ├── package.json
-├── assets/                  # 当前为空，供后续资源使用
-├── scripts/serve.mjs        # 可选本地 HTTP 服务
-├── scripts/kinematics.test.mjs # Node 内置运动学单元测试
+├── scripts/
+│   ├── serve.mjs               # 可选本地服务器
+│   └── kinematics.test.mjs     # Node 内置测试
 └── src/
-    ├── main.js
-    ├── RobotSensors.js       # 末端相机、距离/力矩与关节状态模拟
-    ├── camera.js
+    ├── ui/                     # 卡片、菜单、工作台模式和布局管理
+    ├── main.js                 # 初始化和动画循环
+    ├── RobotSensors.js         # 末端相机、距离/力矩/关节反馈
+    ├── scene.js                # 场景
+    ├── camera.js               # 主相机和轨道控制
     ├── renderer.js
-    ├── scene.js
     ├── styles.css
-    ├── robot/
-    │   ├── RobotArm.js
-    │   ├── Joint.js
-    │   ├── Link.js
-    │   ├── EndEffector.js
-    │   └── Workbench.js
-    ├── controller/
-    │   ├── JointController.js
-    │   ├── KeyboardController.js
-    │   ├── PoseDisplay.js
-    │   ├── TargetController.js
-    │   └── PickPlaceController.js
-    └── kinematics/
-        ├── forward.js
-        ├── inverse.js
-        └── matrix.js
+    ├── robot/                  # RobotArm、Joint、Link、EndEffector、Workbench
+    ├── controller/             # 关节、键盘、姿态、目标 IK、抓取流程
+    └── kinematics/             # forward.js、inverse.js、matrix.js
 ```
 
-## 3. 已完成功能
+## 3. 完成的功能
 
-- V0.1 基础 Three.js 场景、摄像机、灯光、网格地面和 FPS。
-- V0.4 六轴机械臂 Object3D 层级、金属模型、阴影和关节坐标轴。
-- V0.5 J1–J6 滑块与键盘控制、关节限位、实时角度、末端 XYZ 和 Rx/Ry/Rz 姿态显示。
-- 双击启动修复：`index.html` 加载本地经典脚本，Three.js 0.186.0 与 OrbitControls 从 CDN 动态加载；失败时显示错误状态。
-- V0.6 六轴正运动学与带关节限位的阻尼最小二乘逆运动学；支持 XYZ/RX/RY/RZ 数值目标、可拖拽目标球、姿态轴显示和自动关节动画。
-- V0.6 Node 内置运动学测试覆盖几何基准、XYZ 欧拉角转换、可达目标求解和关节限位。
-- V0.7 工业工作台、随机方块/球体/加工件、基于 Three.js 场景投影与射线的模拟视觉检测、可动画开合夹爪和自动抓取放置。
-- V0.7 IDLE/SCAN/MOVE/GRAB/PLACE 状态机、可停止任务、夹爪安全放置和滚动任务日志；测试覆盖任务状态流转与连续桌面取放 IK 位姿。
-- V0.8 末端安装的模拟相机视角、工作台距离射线、简化动力学力/力矩读数，以及六关节位置/速度/力矩反馈。
-- V0.8 机器人状态面板和关节、姿态、目标、任务面板的折叠控制；目标控制球可隐藏，关节角度最多显示六位小数。
+- 六轴机械臂模型、限位滑块/键盘控制、末端坐标与姿态反馈。
+- 正运动学及带限位的阻尼最小二乘逆运动学；XYZ/RX/RY/RZ 目标输入、拖拽控制球及平滑移动。
+- 工业工作台、随机方块/球体/工件、夹爪和 IDLE/SCAN/MOVE/GRAB/PLACE 自动抓取状态机，含任务日志与安全停止/放置。
+- V0.8 末端视角相机、工作台距离射线、简化力/力矩估算、六轴位置/速度/力矩状态表和机器人状态面板。
+- 控制面板可折叠；目标球可隐藏；六轴角度读数最多六位小数。
+- V0.9 卡片式 UI：关节、状态、IK、传感器、任务、目标设置、工作台设置、事件和数据监视卡片；支持 Pointer Events 拖动、折叠、隐藏、尺寸调整和层级管理。
+- V0.9 布局和工作台模式：Default / Control / Debug / Minimal Layout，操作 / 调试 / 监控 / 极简模式；布局保存在 `localStorage` 并在重载后恢复。
+- V0.9 场景模式：基础 / 工业 / 实验 / 空白工作台；无目标 / 单目标 / 多目标 / 随机目标 / 抓取任务。默认不生成目标物。
 
 ## 4. 当前版本状态
 
-V0.8 的传感器和可折叠面板已接入。传感器读数属于 Three.js 场景和简化动力学模型的估算值，不代表真实硬件采样。直接双击启动仍待 Edge 实机验收。
+V0.9 UI 重构和浏览器验收已完成；V1.0 未开始。当前范围止于 V0.9。
 
 ## 5. 关键技术
 
-HTML5、CSS、JavaScript、Three.js 0.186.0、WebGL 2、OrbitControls、TransformControls。机械臂为六自由度串联 Object3D 层级。IK 使用数值雅可比和阻尼最小二乘法，运动学计算采用弧度，页面输入输出采用角度。自动抓取视觉为场景几何投影与射线模拟，不读取真实摄像头图像。末端传感器相机由独立 Three.js 视口渲染；关节力矩、末端力/力矩均为简化仿真估算。直接双击模式通过 `index.html` 顺序加载 IIFE 经典脚本；不要改回本地 ES 模块脚本加载。
+HTML/CSS/原生 JavaScript、Three.js 0.186.0、WebGL 2、OrbitControls、TransformControls。机械臂用六轴串联 `Object3D`；IK 内部用弧度，界面用角度。页面通过 `index.html` 按序加载 IIFE 经典脚本以支持 `file://` 启动。自动抓取视觉、末端相机及力/力矩读数均为场景/模型仿真，不接真实传感器。
 
 ## 6. 已知问题
 
-- Three.js、OrbitControls 和 TransformControls 依赖 jsDelivr，双击运行仍需要互联网；项目不包含离线 Three.js 副本。
-- 当前 localhost 页面在内嵌浏览器中已加载到 READY，并完成随机工件整批自动抓取/放置，日志回到 IDLE 并显示本批处理完成；控制台无警告或错误。
-- 双击 `file://` 的 Edge 实机验收尚未完成；该方式仍需验证 CDN 加载、WebGL 与显示效果。
+- Three.js 及控件从 jsDelivr 加载，运行需要网络和支持 WebGL 2 的现代浏览器；无离线依赖包。
+- `file://` 下的 Edge 启动和显示尚未验收。
+- V0.9 本轮全部 JavaScript 文件通过 `node --check`，`node --test scripts/kinematics.test.mjs` 8 项通过；localhost 浏览器已验收卡片、模式、场景、关节、IK、传感器、抓取和布局刷新恢复。
+- 传感器读数是简化估算，不代表真实硬件数据。
 
 ## 7. 下一步
 
-1. 在 Edge 中双击项目根目录 `index.html`，确认 READY、模型可见、滑块/键盘/姿态反馈正常；若失败查看 F12 Console 和网络状态。
-2. 在直接双击模式下验收目标球拖动、姿态输入与机械臂跟随；保留现有手动控制。
+1. 如需验收双击启动，可在 Edge 打开根目录 `index.html`；Three.js 依赖 CDN 和 WebGL 2。
+2. 新的开发工作需要用户明确指定；本轮停止于 V0.9。
 
 ## 8. 约束与注意事项
 
-- 只使用本地 Git；不要添加 GitHub remote、推送或上传项目。V0.8 开发基于 V0.7 本地版本。
-- 保持六轴手动控制、现有限位和反馈等稳定功能；改动前先检查当前实现。
-- 当前版本 V0.8 包含 FK/IK、自动抓取与传感器仿真，并保留原有关节手动控制。
-- 双击运行不需要 Node/npm，但需要互联网访问 jsDelivr 和支持 WebGL 2 的现代浏览器。可选服务器方式：`node scripts/serve.mjs`。
-- Windows 终端优先使用 PowerShell 7。
+- 仅使用本地 Git；不添加远程、不推送或上传项目。
+- 保持六轴手动控制、关节限位、FK/IK 和抓取流程稳定；改动前先检查现有实现。
+- 保留 `file://` 启动能力：不要把本地 IIFE 脚本加载改回 ES module；外部 Three.js 仍需联网。
+- 传感器是仿真数据，不要描述为真实硬件测量。
+- 通信监视器只记录本地模拟器的工作台事件，没有真实通信接口。
+- Windows 终端优先 PowerShell 7（`pwsh`）。
