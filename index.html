@@ -272,7 +272,7 @@
   async function start() {
     try {
       const version = '0.186.0';
-      const base = 'https://cdn.jsdelivr.net/npm/three@' + version;
+      const base = window.robotArmDesktop?.threeBase || 'https://cdn.jsdelivr.net/npm/three@' + version;
       const THREE = await import(base + '/build/three.module.js');
       window.THREE = THREE;
       const controls = await import(base + '/examples/jsm/controls/OrbitControls.js');

@@ -1,4 +1,9 @@
-# Dependencies are loaded from a pinned CDN import map; no local package install is needed.
+# Dependencies and generated desktop builds
+node_modules/
+release/
+dist/
+
+# Local operating-system files
 .DS_Store
 Thumbs.db
 desktop.ini

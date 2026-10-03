@@ -106,3 +106,25 @@ Robot-Arm-Simulator/
 - HTML5、CSS、原生 JavaScript（兼容双击打开的经典脚本）
 - Three.js 0.186.0、WebGL 2、OrbitControls、TransformControls
 - 六自由度 `Object3D` 关节层级、限位 IK 和末端世界姿态反馈
+
+## Windows 桌面版（预览）
+
+项目可通过 Electron 封装为 Windows 桌面应用。桌面版使用随程序打包的 Three.js，不需要从 CDN 下载引擎；浏览器版的启动方式不变。桌面程序通过 Electron 安全本地协议读取应用资源，不启动网络监听端口；工作台布局可在不同启动间保存在稳定的应用来源下，并关闭渲染进程 Node.js 集成。
+
+### 本地开发与构建
+
+需要 Node.js 22 或兼容版本：
+
+```bash
+npm ci
+npm run desktop       # 本机开发启动
+npm test              # 运动学与抓取测试
+npm run pack:dir      # 打包当前操作系统目录，用于检查打包配置
+npm run dist:win      # 在 Windows 上构建 x64 安装版和便携版
+```
+
+Windows 发行版包含可选择安装目录并创建快捷方式的安装程序，以及无需安装的便携版。构建输出位于 `release/`。目前没有代码签名证书，Windows SmartScreen 可能对新发布的程序显示未签名提示。应用仍需要具备 WebGL 2 的显卡和驱动。
+
+### GitHub Releases
+
+`.github/workflows/windows-release.yml` 在推送与 `package.json` 版本一致的 `v*` 标签后，运行运动学测试并构建两个 `.exe`，计算 SHA-256 校验值，然后上传为**草稿 Release**。草稿需要仓库维护者检查文件和说明后手动发布，避免未审核的构建直接公开。当前项目版本为 `0.9.0`；创建 `v0.9.0` 标签并推送后可触发该流程。
