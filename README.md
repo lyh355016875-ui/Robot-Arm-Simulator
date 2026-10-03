@@ -20,6 +20,23 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 将输出与 `SHA256SUMS.txt` 中对应的哈希比较。
 哈希比对用于检查文件完整性，不能代替代码签名或证明发布者身份。
 
+## 项目目录
+
+```text
+.
+├── assets/                 # 静态资源
+├── electron/               # 桌面主进程与 preload
+├── scripts/                # 本地服务器与自动化测试
+├── src/
+│   ├── controller/         # 关节、目标姿态与抓取控制
+│   ├── kinematics/         # 正/逆运动学与矩阵工具
+│   ├── robot/              # 机械臂、关节、连杆、夹爪与工作台
+│   ├── ui/                 # 卡片、布局、菜单与工作台模式
+│   └── main.js、scene.js、renderer.js、camera.js、RobotSensors.js
+├── index.html              # 浏览器版入口
+└── package.json            # 依赖、脚本与桌面打包配置
+```
+
 ## 功能
 
 - 六轴关节滑块和键盘控制，带关节角度限制。
@@ -29,6 +46,12 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 - 末端相机、距离、力/力矩等**模拟**传感器面板。
 
 > 传感器、视觉检测和通信事件均为仿真，不连接真实机械臂或真实传感器。
+
+## 技术栈
+
+- **浏览器端：** HTML、CSS、原生 JavaScript、Three.js 0.186.0、WebGL 2。
+- **桌面端：** Electron 44；隔离渲染进程、preload 与本地应用协议，Three.js 随应用打包。
+- **测试与发行：** Node.js 内置测试运行器；GitHub Actions 构建 Windows x64 安装版、便携版及 SHA-256 清单。
 
 ## 运行与开发
 

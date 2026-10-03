@@ -20,6 +20,23 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 Compare the result with the matching entry in `SHA256SUMS.txt`.
 This checks file integrity; it does not replace code signing or authenticate the publisher.
 
+## Project structure
+
+```text
+.
+├── assets/                 # Static assets
+├── electron/               # Desktop main process and preload
+├── scripts/                # Local server and automated tests
+├── src/
+│   ├── controller/         # Joint, target-pose, and pick-and-place control
+│   ├── kinematics/         # Forward/inverse kinematics and matrix helpers
+│   ├── robot/              # Arm, joints, links, gripper, and workbench
+│   ├── ui/                 # Cards, layouts, menus, and workspace modes
+│   └── main.js, scene.js, renderer.js, camera.js, RobotSensors.js
+├── index.html              # Browser entry point
+└── package.json            # Dependencies, scripts, and desktop build config
+```
+
 ## Features
 
 - Six-axis joint sliders and keyboard controls with joint limits.
@@ -29,6 +46,12 @@ This checks file integrity; it does not replace code signing or authenticate the
 - End-effector camera, distance, force/torque, and other **simulated** sensors.
 
 > Sensors, vision, and communication events are simulated; the app does not connect to a physical robot or real sensors.
+
+## Technology
+
+- **Browser:** HTML, CSS, vanilla JavaScript, Three.js 0.186.0, and WebGL 2.
+- **Desktop:** Electron 44 with an isolated renderer, preload, and local app protocol; Three.js is bundled.
+- **Tests and releases:** Node.js built-in test runner; GitHub Actions builds Windows x64 installer/portable packages and SHA-256 checksums.
 
 ## Run and develop
 
