@@ -64,7 +64,8 @@
 
     updateReadout(index) {
       const degrees = this.robot.joints[index].currentAngle;
-      const label = degrees + '°';
+      const rounded = Number(degrees.toFixed(6));
+      const label = (Object.is(rounded, -0) ? '0' : String(rounded)) + '°';
       this.outputs[index].value = label;
       this.outputs[index].textContent = label;
       this.inputs[index].setAttribute('aria-valuetext', label);

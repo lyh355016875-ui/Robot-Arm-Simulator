@@ -23,7 +23,8 @@
       }));
       this.button = rootElement.getElementById('move-to-target');
       this.status = rootElement.getElementById('target-status');
-      if (!this.button || !this.status) throw new Error('缺少目标控制按钮或状态显示。');
+      this.visibilityToggle = rootElement.getElementById('target-visibility-toggle');
+      if (!this.button || !this.status || !this.visibilityToggle) throw new Error('缺少目标控制按钮、可见性开关或状态显示。');
 
       this.targetObject = this.createTargetObject();
       this.scene.add(this.targetObject);
@@ -34,6 +35,7 @@
       this.transformControls.attach(this.targetObject);
       this.transformHelper = this.transformControls.getHelper();
       this.scene.add(this.transformHelper);
+      this.setTargetVisible(this.visibilityToggle.checked);
 
       const initialPose = this.robot.getEndEffectorPose();
       this.writeInputs(initialPose);
@@ -61,13 +63,16 @@
         }
       };
       this.onButtonClick = () => this.moveToTarget();
+      this.onVisibilityChange = () => this.setTargetVisible(this.visibilityToggle.checked);
       this.transformControls.addEventListener('objectChange', this.onObjectChange);
       this.transformControls.addEventListener('dragging-changed', this.onDraggingChanged);
       this.button.addEventListener('click', this.onButtonClick);
+      this.visibilityToggle.addEventListener('change', this.onVisibilityChange);
       for (const input of Object.values(this.inputs)) input.addEventListener('input', this.onInput);
       this.removeListeners.push(() => this.transformControls.removeEventListener('objectChange', this.onObjectChange));
       this.removeListeners.push(() => this.transformControls.removeEventListener('dragging-changed', this.onDraggingChanged));
       this.removeListeners.push(() => this.button.removeEventListener('click', this.onButtonClick));
+      this.removeListeners.push(() => this.visibilityToggle.removeEventListener('change', this.onVisibilityChange));
       for (const input of Object.values(this.inputs)) this.removeListeners.push(() => input.removeEventListener('input', this.onInput));
       this.setStatus('拖动目标球，或输入 XYZ 与 RX/RY/RZ。', 'ready');
     }
@@ -97,6 +102,12 @@
       axes.name = 'IK Target Orientation Axes';
       target.add(axes);
       return target;
+    }
+
+    setTargetVisible(visible) {
+      const isVisible = Boolean(visible);
+      if (this.targetObject) this.targetObject.visible = isVisible;
+      if (this.transformHelper) this.transformHelper.visible = isVisible;
     }
 
     writeInputs(pose) {

@@ -251,7 +251,7 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
 .task-log-heading span:last-child { color: #71849a; }
 .task-log { display: flex; max-height: 92px; flex-direction: column; gap: 4px; overflow-y: auto; margin: 0; padding: 7px 7px 7px 23px; border: 1px solid rgba(153,176,204,.1); border-radius: 6px; color: #91a7b9; background: rgba(7,14,24,.44); font-size: 8px; line-height: 1.45; }
 .task-log li { padding-left: 1px; overflow-wrap: anywhere; }
-.pose-panel { position: absolute; z-index: 2; top: 112px; right: 25px; width: 228px; padding: 13px; border: 1px solid rgba(140,170,206,.15); border-radius: 11px; background: rgba(12,21,35,.82); box-shadow: 0 12px 34px rgba(0,0,0,.18); backdrop-filter: blur(14px); pointer-events: none; }
+.pose-panel { position: absolute; z-index: 2; top: 112px; right: 25px; width: 228px; padding: 13px; border: 1px solid rgba(140,170,206,.15); border-radius: 11px; background: rgba(12,21,35,.82); box-shadow: 0 12px 34px rgba(0,0,0,.18); backdrop-filter: blur(14px); }
 .pose-panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .pose-panel-heading h2 { margin: 6px 0 0; color: #e2ebf5; font-size: 13px; font-weight: 620; }
 .feedback-dot { width: 6px; height: 6px; border-radius: 50%; background: #63d6a4; box-shadow: 0 0 9px #63d6a477; }
@@ -307,6 +307,70 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
 .target-status[data-state="ready"] { color: #8bd7c0; }
 .target-status[data-state="error"] { color: #f0a2a3; }
 
+/* Collapsible panel affordances and the V0.8 sensor console. */
+.panel-summary { list-style: none; cursor: pointer; user-select: none; }
+.panel-summary::-webkit-details-marker { display: none; }
+.panel-summary::after { flex: 0 0 auto; margin-left: 8px; color: #6e879d; content: "▾"; font: 11px/1 "SFMono-Regular", Consolas, monospace; }
+details:not([open]) > .panel-summary::after { content: "▸"; }
+.panel-summary:focus-visible { outline: 1px solid rgba(84,209,223,.7); outline-offset: 3px; border-radius: 4px; }
+.joint-panel:not([open]), .target-panel:not([open]), .pose-panel:not([open]), .sensor-panel:not([open]) { padding-bottom: 12px; }
+.joint-panel:not([open]) > .panel-summary, .target-panel:not([open]) > .panel-summary,
+.pose-panel:not([open]) > .panel-summary, .sensor-panel:not([open]) > .panel-summary { margin-bottom: 0; }
+.joint-panel[open] > .panel-summary, .target-panel[open] > .panel-summary,
+.pose-panel[open] > .panel-summary, .sensor-panel[open] > .panel-summary { margin-bottom: 10px; }
+.task-control > .task-control-heading { margin-bottom: 0; }
+.task-control[open] > .task-control-heading { margin-bottom: 9px; }
+.target-visibility { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; color: #9eafc3; font-size: 9px; cursor: pointer; }
+.target-visibility input { width: 13px; height: 13px; margin: 0; accent-color: #51cbd6; }
+.sensor-panel {
+  position: absolute;
+  z-index: 3;
+  top: 24px;
+  right: 260px;
+  width: min(350px, calc(100% - 550px));
+  min-width: 290px;
+  max-height: calc(100% - 48px);
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid rgba(140,170,206,.17);
+  border-radius: 11px;
+  background: rgba(12,21,35,.91);
+  box-shadow: 0 12px 34px rgba(0,0,0,.24);
+  backdrop-filter: blur(14px);
+}
+.sensor-panel-heading { display: flex; align-items: center; justify-content: space-between; }
+.sensor-panel-heading h2 { margin: 6px 0 0; color: #e2ebf5; font-size: 12px; font-weight: 620; }
+.robot-status-badge, .sensor-simulation-tag { padding: 5px 6px; border: 1px solid rgba(84,209,223,.2); border-radius: 5px; color: #83d9c0; background: rgba(48,126,150,.1); font: 650 8px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .04em; }
+.robot-status-badge[data-status="auto"] { color: #8bcaf1; border-color: rgba(139,202,241,.3); }
+.robot-status-badge[data-status="holding"] { color: #e8c47a; border-color: rgba(232,196,122,.3); }
+.sensor-panel-content { display: grid; gap: 9px; }
+.sensor-section { min-width: 0; padding: 9px; border: 1px solid rgba(153,176,204,.1); border-radius: 7px; background: rgba(7,14,24,.38); }
+.sensor-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; color: #a9bbce; font: 600 8px/1.3 "SFMono-Regular", Consolas, monospace; letter-spacing: .035em; }
+.sensor-online { color: #78d9ae; }
+.sensor-online[data-state="offline"] { color: #ee969b; }
+.sensor-camera-frame { overflow: hidden; aspect-ratio: 16 / 9; margin-top: 7px; border: 1px solid rgba(110,147,176,.18); border-radius: 5px; background: #08111e; }
+.sensor-camera-frame canvas { display: block; width: 100%; height: 100%; }
+.sensor-reading-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sensor-reading-row > div { display: grid; gap: 5px; }
+.sensor-reading-row small { color: #788ea4; font-size: 8px; }
+#distance-sensor-value { color: #85dce0; font: 650 12px/1 "SFMono-Regular", Consolas, monospace; white-space: nowrap; }
+#distance-sensor-state[data-state="near"] { color: #e9b56b; }
+.sensor-value-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 5px; margin-top: 7px; }
+.sensor-value { display: flex; min-width: 0; flex-direction: column; gap: 4px; padding: 6px; border-radius: 5px; background: rgba(29,43,62,.45); }
+.sensor-value > span { color: #72879f; font: 550 8px/1 "SFMono-Regular", Consolas, monospace; }
+.sensor-value output { color: #9ddfe0; font: 600 9px/1 "SFMono-Regular", Consolas, monospace; overflow-wrap: anywhere; }
+.joint-telemetry-scroll { overflow-x: auto; margin-top: 6px; }
+.joint-telemetry-table { width: 100%; border-collapse: collapse; color: #9fb0c4; font: 8px/1.3 "SFMono-Regular", Consolas, monospace; }
+.joint-telemetry-table th, .joint-telemetry-table td { padding: 5px 4px; border-bottom: 1px solid rgba(153,176,204,.08); text-align: right; white-space: nowrap; }
+.joint-telemetry-table thead th { color: #778ca2; font-weight: 550; }
+.joint-telemetry-table th:first-child, .joint-telemetry-table td:first-child { position: sticky; left: 0; text-align: left; background: #101c2b; }
+.joint-telemetry-table tbody td { color: #a9dfe0; }
+.sensor-footnote { margin: 0 2px; color: #71849a; font-size: 8px; line-height: 1.45; }
+
+@media (max-width: 1000px) and (min-width: 701px) {
+  .sensor-panel { top: 72px; right: 13px; width: min(330px, calc(100% - 290px)); min-width: 0; max-height: calc(100% - 92px); }
+}
+
 @media (max-width: 700px) {
   .target-panel { top: auto; right: 13px; bottom: 50px; width: 190px; max-height: 45%; overflow-y: auto; padding: 9px; }
   .target-panel-heading { margin-bottom: 8px; }
@@ -320,4 +384,10 @@ noscript { position: fixed; inset: auto 12px 12px; z-index: 10; padding: 12px; c
   .task-log { max-height: 74px; padding-left: 20px; font-size: 7px; }
   .pose-panel { top: 70px; right: 13px; bottom: auto; width: 190px; }
   .controls-hint { display: none; }
+  .sensor-panel { top: 72px; right: 13px; left: 13px; width: auto; min-width: 0; max-height: calc(100% - 92px); padding: 10px; }
+  .sensor-panel[open] { max-height: calc(100% - 92px); }
+  .sensor-panel-heading h2 { font-size: 11px; }
+  .sensor-panel-content { gap: 7px; }
+  .sensor-section { padding: 7px; }
+  .joint-telemetry-table { font-size: 7px; }
 }

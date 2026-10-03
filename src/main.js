@@ -3,7 +3,7 @@
   global.RobotArmSimulator = global.RobotArmSimulator || {};
   const app = global.RobotArmSimulator;
 
-  const { createCamera, createRenderer, createRobotArm, Workbench, JointController, KeyboardController, PoseDisplay, TargetController, PickPlaceController, createScene } = app;
+  const { createCamera, createRenderer, createRobotArm, Workbench, JointController, KeyboardController, PoseDisplay, TargetController, PickPlaceController, RobotSensors, createScene } = app;
   const container = document.querySelector('#scene-container');
   const fpsValue = document.querySelector('#fps-value');
   try {
@@ -23,12 +23,14 @@
     const keyboardController = new KeyboardController(jointController);
     targetController = new TargetController({ robot, scene, camera, renderer, orbitControls: controls, jointController });
     const pickPlaceController = new PickPlaceController({ robot, workbench, targetController });
+    const robotSensors = new RobotSensors({ scene, robot, workbench, taskController: pickPlaceController });
     poseDisplay.update();
 
     window.addEventListener('pagehide', () => {
       jointController.dispose();
       keyboardController.dispose();
       pickPlaceController.dispose();
+      robotSensors.dispose();
       targetController.dispose();
       controls.dispose();
       renderer.dispose();
@@ -61,6 +63,7 @@
       controls.update(delta);
       targetController.update(delta);
       pickPlaceController.update(delta);
+      robotSensors.update(delta);
       renderer.render(scene, camera);
     }
 

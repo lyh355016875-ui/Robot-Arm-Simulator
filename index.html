@@ -41,7 +41,7 @@
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.7</span>
+          <span class="version-label">V0.8</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -69,14 +69,14 @@
             <span class="card-ready is-starting" id="renderer-state"><span></span><span id="renderer-state-label">STARTING</span></span>
           </div>
 
-          <section class="joint-panel" aria-label="六轴机械臂关节角度控制">
-            <div class="joint-panel-heading">
+          <details class="joint-panel" aria-label="六轴机械臂关节角度控制" open>
+            <summary class="joint-panel-heading panel-summary">
               <div>
                 <span class="card-label">JOINT CONTROL</span>
                 <h2>六轴关节控制</h2>
               </div>
               <span class="joint-count">6 DOF</span>
-            </div>
+            </summary>
 
             <label class="joint-row" for="joint1-angle">
               <span class="joint-label"><span class="joint-index">01</span><span>Joint1 · 底座旋转</span><output id="joint1-value" for="joint1-angle">0°</output></span>
@@ -109,11 +109,12 @@
             </label>
             <p class="keyboard-help"><span>键盘微调</span> J1 A/D · J2 S/W · J3 F/R · J4 G/T · J5 H/Y · J6 J/U <kbd>Shift</kbd> 10°</p>
 
-            <section class="task-control" aria-label="自动抓取任务控制">
-              <div class="task-control-heading">
+            <details class="task-control" aria-label="自动抓取任务控制">
+              <summary class="task-control-heading panel-summary">
                 <div><span class="card-label">PICK &amp; PLACE</span><h3>自动抓取</h3></div>
                 <span id="task-state" class="task-state" data-state="idle">IDLE</span>
-              </div>
+              </summary>
+              <div class="task-control-body">
               <div class="task-buttons">
                 <button id="spawn-workpieces" type="button">随机生成</button>
                 <button id="start-pick-place" class="task-start-button" type="button">开始抓取</button>
@@ -122,14 +123,15 @@
               <button id="release-held-part" class="task-recovery-button" type="button" disabled>安全放置夹爪中的工件</button>
               <div class="task-log-heading"><span>任务日志</span><span>视觉 · 运动 · 夹爪</span></div>
               <ol id="task-log" class="task-log" aria-live="polite" aria-relevant="additions"></ol>
-            </section>
-          </section>
+              </div>
+            </details>
+          </details>
 
-          <section class="pose-panel" aria-label="末端实时姿态和坐标" aria-live="polite">
-            <div class="pose-panel-heading">
+          <details class="pose-panel" aria-label="末端实时姿态和坐标" aria-live="polite">
+            <summary class="pose-panel-heading panel-summary">
               <div><span class="card-label">TOOL FEEDBACK</span><h2>当前姿态与坐标</h2></div>
               <span class="feedback-dot" aria-hidden="true"></span>
-            </div>
+            </summary>
             <div class="pose-group">
               <h3>坐标 XYZ <span>米</span></h3>
               <div class="pose-grid">
@@ -147,13 +149,14 @@
                 <div class="pose-value"><span>Rz</span><output id="pose-yaw">0.0°</output></div>
               </div>
             </div>
-          </section>
+          </details>
 
-          <section class="target-panel" aria-label="逆运动学目标控制">
-            <div class="target-panel-heading">
+          <details class="target-panel" aria-label="逆运动学目标控制">
+            <summary class="target-panel-heading panel-summary">
               <div><span class="card-label">INVERSE KINEMATICS</span><h2>末端目标</h2></div>
               <span class="target-badge">IK</span>
-            </div>
+            </summary>
+            <label class="target-visibility"><input id="target-visibility-toggle" type="checkbox" checked />显示场景目标球</label>
             <div class="target-input-group">
               <span>位置 <small>米</small></span>
               <label>X <input id="target-x" type="number" step="0.01" inputmode="decimal" aria-label="目标 X 坐标" /></label>
@@ -168,7 +171,52 @@
             </div>
             <button id="move-to-target" class="target-button" type="button">移动到目标</button>
             <p id="target-status" class="target-status" role="status" aria-live="polite">拖动场景中的目标球，或输入目标位姿。</p>
-          </section>
+          </details>
+
+          <details id="sensor-panel" class="sensor-panel" aria-label="机器人状态与传感器">
+            <summary class="sensor-panel-heading panel-summary">
+              <div><span class="card-label">ROBOT TELEMETRY</span><h2>机器人状态与传感器</h2></div>
+              <span id="robot-status-badge" class="robot-status-badge" data-status="ready">READY</span>
+            </summary>
+            <div class="sensor-panel-content">
+              <section class="sensor-section" aria-label="机械臂视角相机">
+                <div class="sensor-section-heading"><span>TOOL CAMERA · 机械臂视角</span><span id="camera-sensor-status" class="sensor-online">ONLINE</span></div>
+                <div class="sensor-camera-frame"><canvas id="robot-camera-view" width="640" height="360" aria-label="末端相机实时画面"></canvas></div>
+              </section>
+              <section class="sensor-section sensor-reading-row" aria-label="距离传感器读数">
+                <div><span class="sensor-section-heading">DISTANCE · 距离传感器</span><small id="distance-sensor-state">等待测量</small></div>
+                <output id="distance-sensor-value">-- m</output>
+              </section>
+              <section class="sensor-section" aria-label="力矩传感器读数">
+                <div class="sensor-section-heading"><span>FORCE / TORQUE · 力矩传感器</span><span class="sensor-simulation-tag">SIM</span></div>
+                <div class="sensor-value-grid">
+                  <div class="sensor-value"><span>Fx · N</span><output id="sensor-force-x">0.000</output></div>
+                  <div class="sensor-value"><span>Fy · N</span><output id="sensor-force-y">0.000</output></div>
+                  <div class="sensor-value"><span>Fz · N</span><output id="sensor-force-z">0.000</output></div>
+                  <div class="sensor-value"><span>Tx · Nm</span><output id="sensor-torque-x">0.000</output></div>
+                  <div class="sensor-value"><span>Ty · Nm</span><output id="sensor-torque-y">0.000</output></div>
+                  <div class="sensor-value"><span>Tz · Nm</span><output id="sensor-torque-z">0.000</output></div>
+                </div>
+              </section>
+              <section class="sensor-section" aria-label="六轴关节状态反馈">
+                <div class="sensor-section-heading"><span>JOINT FEEDBACK · 关节状态</span><span>六轴</span></div>
+                <div class="joint-telemetry-scroll">
+                  <table class="joint-telemetry-table">
+                    <thead><tr><th>关节</th><th>Joint Position (°)</th><th>Velocity (°/s)</th><th>Torque (Nm)</th></tr></thead>
+                    <tbody>
+                      <tr><th scope="row">J1</th><td id="sensor-joint-1-position">0.000000</td><td id="sensor-joint-1-velocity">0.000000</td><td id="sensor-joint-1-torque">0.000</td></tr>
+                      <tr><th scope="row">J2</th><td id="sensor-joint-2-position">0.000000</td><td id="sensor-joint-2-velocity">0.000000</td><td id="sensor-joint-2-torque">0.000</td></tr>
+                      <tr><th scope="row">J3</th><td id="sensor-joint-3-position">0.000000</td><td id="sensor-joint-3-velocity">0.000000</td><td id="sensor-joint-3-torque">0.000</td></tr>
+                      <tr><th scope="row">J4</th><td id="sensor-joint-4-position">0.000000</td><td id="sensor-joint-4-velocity">0.000000</td><td id="sensor-joint-4-torque">0.000</td></tr>
+                      <tr><th scope="row">J5</th><td id="sensor-joint-5-position">0.000000</td><td id="sensor-joint-5-velocity">0.000000</td><td id="sensor-joint-5-torque">0.000</td></tr>
+                      <tr><th scope="row">J6</th><td id="sensor-joint-6-position">0.000000</td><td id="sensor-joint-6-velocity">0.000000</td><td id="sensor-joint-6-torque">0.000</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+              <p class="sensor-footnote">读数由当前场景、姿态和简化动力学模型估算，不代表真实硬件测量。</p>
+            </div>
+          </details>
 
           <div class="viewport-footer">
             <div class="world-status">
@@ -249,6 +297,7 @@
         './src/kinematics/matrix.js', './src/kinematics/forward.js', './src/kinematics/inverse.js',
         './src/robot/Joint.js', './src/robot/Link.js', './src/robot/EndEffector.js', './src/robot/RobotArm.js',
         './src/robot/Workbench.js',
+        './src/RobotSensors.js',
         './src/controller/JointController.js', './src/controller/KeyboardController.js', './src/controller/PoseDisplay.js',
         './src/controller/TargetController.js', './src/controller/PickPlaceController.js',
         './src/main.js',
