@@ -4,7 +4,7 @@
   const app = global.RobotArmSimulator;
   const MODES = {
     operation: { layout: 'control', visible: ['robotControl', 'robotStatus', 'taskManager', 'targetSettings'] },
-    debug: { layout: 'debug', visible: ['robotControl', 'robotStatus', 'ikControl', 'sensors', 'taskManager', 'communications', 'dataMonitor'] },
+    debug: { layout: 'debug', visible: ['robotControl', 'robotStatus', 'ikControl', 'sensors', 'taskManager', 'communications', 'dataMonitor', 'learning'] },
     monitor: { layout: 'debug', visible: ['robotStatus', 'sensors', 'taskManager', 'dataMonitor'] },
     minimal: { layout: 'minimal', visible: ['robotStatus'] },
   };

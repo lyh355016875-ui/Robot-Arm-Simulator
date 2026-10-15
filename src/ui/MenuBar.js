@@ -57,6 +57,7 @@
         this.addAction(menu, 'IK 控制', () => this.cardManager.toggleVisible('ikControl'));
         this.addAction(menu, '传感器监视', () => this.cardManager.toggleVisible('sensors'));
         this.addAction(menu, '任务管理器', () => this.cardManager.toggleVisible('taskManager'));
+        this.addAction(menu, '运动学学习', () => this.cardManager.toggleVisible('learning'));
       });
       this.addGroup('scene', '场景', (menu) => {
         this.addSelect(menu, '工作台模式', 'menu-bench-mode', [['basic', '基础工作台'], ['industrial', '工业工作台'], ['lab', '实验工作台'], ['blank', '空白工作台']], this.cardManager.benchMode,

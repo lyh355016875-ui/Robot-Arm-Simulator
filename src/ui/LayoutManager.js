@@ -18,28 +18,28 @@
           ikControl: [right(300), 242, 300, 330, false], sensors: [right(420), 24, 420, 600, false],
           taskManager: [310, 130, 320, 255, false], targetSettings: [right(290), 240, 290, 390, false],
           workbenchSettings: [right(280), 24, 280, 310, false], workspaceSettings: [right(290), 360, 290, 360, false], communications: [right(290), 24, 290, 260, false],
-          dataMonitor: [right(290), 298, 290, 245, false],
+          dataMonitor: [right(290), 298, 290, 245, false], learning: [310, 400, 340, 460, false],
         },
         control: {
           robotControl: [20, 100, 270, 470, true], robotStatus: [right(280), 24, 280, 205, true],
           ikControl: [20, Math.min(582, height - 345), 300, 330, true], sensors: [right(420), 24, 420, 600, false],
-          taskManager: [310, 100, 320, 255, true], targetSettings: [right(290), 242, 290, 390, true],
+          taskManager: [310, 100, 320, 255, true], targetSettings: [right(290), 24, 290, 390, true],
           workbenchSettings: [right(280), 24, 280, 310, false], workspaceSettings: [right(290), 360, 290, 360, false], communications: [right(290), 24, 290, 260, false],
-          dataMonitor: [right(290), 298, 290, 245, false],
+          dataMonitor: [right(290), 298, 290, 245, false], learning: [right(340), 555, 340, 460, false],
         },
         debug: {
           robotControl: [20, 120, 270, 470, true], robotStatus: [20, 24, 280, 205, true],
           ikControl: [right(300), 306, 300, 330, true], sensors: [right(420), 24, 420, 600, true],
           taskManager: [310, 120, 320, 255, true], targetSettings: [right(290), 644, 290, 390, false],
           workbenchSettings: [right(280), 24, 280, 310, false], workspaceSettings: [right(290), 644, 290, 360, false], communications: [310, 390, 290, 260, true],
-          dataMonitor: [310, 660, 290, 245, true],
+          dataMonitor: [310, 660, 290, 245, true], learning: [20, 610, 340, 460, true],
         },
         minimal: {
           robotControl: [20, 130, 270, 470, false], robotStatus: [20, 24, 270, 180, true],
           ikControl: [right(300), 24, 300, 330, false], sensors: [right(420), 24, 420, 600, false],
           taskManager: [310, 130, 320, 255, false], targetSettings: [right(290), 24, 290, 390, false],
           workbenchSettings: [right(280), 24, 280, 310, false], workspaceSettings: [right(290), 360, 290, 360, false], communications: [right(290), 24, 290, 260, false],
-          dataMonitor: [310, 130, 290, 245, false],
+          dataMonitor: [310, 130, 290, 245, false], learning: [right(340), 24, 340, 460, false],
         },
       };
       return presets[name] || presets.default;

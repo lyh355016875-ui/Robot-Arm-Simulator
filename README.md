@@ -4,24 +4,23 @@
 
 基于 Three.js 的六轴机械臂 3D 仿真器，可在浏览器或 Windows 桌面端运行。提供正/逆运动学、关节与末端控制、自动抓取、工作台配置和模拟传感器反馈。
 
-- **当前版本：** v1.0.0
-- **适用场景：** 机械臂运动学演示、交互式仿真与前端开发学习
+- **当前版本：** v1.1.0（新增运动学学习卡片）
+- **适用场景：** 机械臂运动学演示、运动学教学、交互式仿真与前端开发学习
 - **重要边界：** 本项目是仿真器，不连接真实机械臂、相机或传感器
 
 ## 下载 Windows 桌面版
 
-- [GitHub Release 页面](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.0.0)
-- [Windows x64 安装版](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/Robot-Arm-Simulator-1.0.0-win-x64.exe)
-- [Windows x64 便携版](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/Robot-Arm-Simulator-1.0.0-portable-x64.exe)
-- [SHA-256 校验清单](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/SHA256SUMS.txt)
+- [GitHub Releases 页面](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases) — 获取各版本安装包
+- [v1.1.0 Release](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.1.0) — 推送标签后由 CI 构建安装版与便携版
+- 历史版本：[v1.0.0](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.0.0)
 
-在 PowerShell 中核验下载文件：
+在 PowerShell 中核验下载文件（哈希清单随 Release 附件提供）：
 
 ```powershell
-Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
+Get-FileHash .\Robot-Arm-Simulator-<version>-win-x64.exe -Algorithm SHA256
 ```
 
-将结果与 `SHA256SUMS.txt` 中相同文件名对应的哈希比较。
+将结果与 Release 中 `SHA256SUMS.txt` 对应文件名的哈希比较。
 
 ## 界面导览
 
@@ -69,8 +68,18 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 | 工作台布局 | 拖动、缩放、折叠或隐藏卡片；在菜单中保存布局 | 布局保存在当前应用的浏览器存储中 |
 | 场景配置 | 选择工作台、目标物类型、数量、位置和颜色 | 支持方块、球体、圆柱及自定义工件 |
 | 监控 | 打开数据、事件和传感器卡片 | 数据仅用于仿真观察与开发调试 |
+| 运动学学习（v1.1 新增） | 「机器人 → 运动学学习」打开教学卡片 | FK 变换链逐步演示；IK 迭代过程动画与收敛曲线 |
 
 **停止和恢复：** 若机械臂尚未夹住工件，可停止当前运动；若已在放置阶段，程序会先完成当前放置再停止。遇到无法自动放置的异常时，夹爪可能保留工件，可使用“安全放置”操作恢复。
+
+## 运动学学习（v1.1 新增）
+
+「运动学学习」卡片把正逆运动学的求解过程变成可交互的演示，可通过「机器人 → 运动学学习」菜单或工作台卡片列表打开。
+
+- **正运动学 FK 演示：** 把底座到工具的 13 个平移/旋转矩阵按顺序展开。点击步骤列表或使用「上一步 / 下一步 / 自动播放」，逐步查看每步的变换表达式、4×4 累积矩阵和坐标系原点；3D 场景同步显示每个关节的坐标系与骨架链，当前步骤高亮。演示时拖动关节滑块，坐标系与骨架实时更新。
+- **逆运动学 IK 演示：** 输入目标位姿（或一键读取当前末端 / 场景目标球），以「开始迭代 / 单步 / 直接求解」观察阻尼最小二乘法逐步逼近目标。机械臂每次迭代移动一小步，场景绘制末端轨迹线与目标球，卡片内收敛曲线图实时显示位置误差（cm）与姿态误差（°）。拖动滑块会暂停演示；「重置」恢复演示前的关节角；收敛、停滞（目标不可达）和达到最大迭代次数均有状态提示。
+
+教学卡片与正式求解共用同一套运动学实现（`fkChain` / `createIKSession`），不复制算法。
 
 ## 工作原理
 
@@ -98,11 +107,12 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 | `src/main.js` | 初始化场景、机器人、控制器、面板与主动画循环 | 调整模块装配和每帧更新顺序 |
 | `src/scene.js`、`camera.js`、`renderer.js` | Three.js 场景、相机、轨道控制和渲染器 | 修改灯光、视角、阴影或渲染参数 |
 | `src/robot/` | 关节、连杆、末端夹爪、机械臂层级和工作台工件 | 调整机器人几何、关节轴、工件或夹持行为 |
-| `src/kinematics/` | 矩阵工具、正运动学 FK、逆运动学 IK | 修改位姿变换、关节限位或求解收敛参数 |
-| `src/controller/` | 关节、键盘、目标位姿、抓取状态机和姿态显示 | 增加控制行为或修改任务流程 |
+| `src/kinematics/` | 矩阵工具、正运动学 FK（含 `fkChain` 变换链）、逆运动学 IK（含 `createIKSession` 单步迭代） | 修改位姿变换、关节限位或求解收敛参数 |
+| `src/controller/` | 关节、键盘、目标位姿、抓取状态机、运动学学习和姿态显示 | 增加控制行为或修改任务流程 |
 | `src/RobotSensors.js` | 末端相机、距离、力/力矩和关节状态模拟 | 扩展传感器模型或监视数据 |
 | `src/ui/` | 卡片、布局持久化、菜单、工作台模式和监视器 | 添加 UI 卡片、预设布局或工作台模式 |
 | `scripts/kinematics.test.mjs` | FK、IK 和抓取状态机自动测试 | 修改运动学或任务状态时增加回归测试 |
+| `scripts/learning.test.mjs` | `fkChain` 变换链与 `createIKSession` 迭代测试 | 修改运动学或学习卡片时增加回归测试 |
 | `.github/workflows/windows-release.yml` | 标签触发的测试、Windows 构建及草稿 Release | 修改 CI 或发行流程 |
 
 ### 目录结构
@@ -119,7 +129,8 @@ Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
 │   └── preload.cjs                 # 隔离预加载脚本
 ├── scripts/
 │   ├── serve.mjs                   # 本地浏览器开发服务器
-│   └── kinematics.test.mjs         # 自动化测试
+│   ├── kinematics.test.mjs         # 运动学与抓取状态机测试
+│   └── learning.test.mjs           # fkChain / createIKSession 测试
 ├── src/
 │   ├── controller/
 │   ├── kinematics/
@@ -187,7 +198,7 @@ npm run desktop
 ### 测试与构建
 
 ```bash
-npm test              # FK、IK、关节限位和抓取状态机测试
+npm test              # FK、IK、关节限位、抓取状态机和运动学学习模块测试
 npm run pack:dir      # 打包当前操作系统的应用目录
 npm run dist:win      # 构建 Windows x64 安装版与便携版
 ```

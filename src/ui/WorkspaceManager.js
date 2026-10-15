@@ -6,7 +6,7 @@
     ['robotControl', '机器人控制'], ['robotStatus', '机器人状态'], ['ikControl', 'IK 控制'],
     ['sensors', '传感器监视'], ['taskManager', '任务管理器'], ['targetSettings', '目标物设置'],
     ['workbenchSettings', '工作台设置'], ['workspaceSettings', '工作台管理'],
-    ['communications', '通信监视器'], ['dataMonitor', '数据监视器'],
+    ['communications', '通信监视器'], ['dataMonitor', '数据监视器'], ['learning', '运动学学习'],
   ];
 
   class WorkspaceManager {
@@ -18,6 +18,7 @@
       this.makeTaskCard();
       this.makeSettingsCards();
       this.makeMonitorCards();
+      this.makeLearningCard();
       this.makeWorkspaceSettingsCard();
       this.cardManager.clampAll();
       this.workspace = new app.Workspace(this.cardManager);
@@ -88,6 +89,44 @@
         + '<div><span>末端坐标</span><output id="data-pose">--</output></div><div><span>任务状态</span><output id="data-task-state">IDLE</output></div>'
         + '<div><span>当前目标</span><output id="data-workpieces">0</output></div></div><p class="settings-note">每 250 ms 刷新一次</p>';
       this.cardManager.register(data);
+    }
+
+    makeLearningCard() {
+      const card = this.createCard('learning', '运动学学习', 'KINEMATICS LEARNING', '运动学学习');
+      card.innerHTML += '<div class="learn-tabs" role="tablist">'
+        + '<button id="learn-mode-fk" class="is-active" type="button" role="tab" aria-selected="true">正运动学 FK</button>'
+        + '<button id="learn-mode-ik" type="button" role="tab" aria-selected="false">逆运动学 IK</button></div>'
+        + '<div id="learn-fk-body" class="learn-body">'
+        + '<p class="learn-intro">从底座到工具共 13 个平移/旋转矩阵按顺序连乘：T = A₁·A₂·…·A₁₃，末端位姿 = T 变换原点。点击任意步骤查看该步的累积矩阵。</p>'
+        + '<div class="learn-fk-layout"><ol id="learn-fk-steps" class="learn-steps"></ol>'
+        + '<div class="learn-fk-detail"><div id="learn-fk-step-title" class="learn-step-title">—</div>'
+        + '<div id="learn-fk-transform" class="learn-step-transform">—</div>'
+        + '<div id="learn-fk-matrix" class="learn-matrix"></div>'
+        + '<div id="learn-fk-origin" class="learn-origin">—</div></div></div>'
+        + '<div class="learn-controls"><button id="learn-fk-prev" type="button">上一步</button>'
+        + '<button id="learn-fk-next" type="button">下一步</button>'
+        + '<button id="learn-fk-play" type="button">自动播放</button></div>'
+        + '<p class="learn-hint">演示时可以拖动关节滑块，坐标系与骨架会实时更新。</p></div>'
+        + '<div id="learn-ik-body" class="learn-body" hidden>'
+        + '<p class="learn-intro">阻尼最小二乘法：每次迭代计算雅可比 J，解 (JᵀJ + λ²I)·Δθ = Jᵀ·e 更新关节角，再投影回关节限位，反复逼近目标。</p>'
+        + '<div class="learn-target-grid">'
+        + '<label>X<input id="learn-target-x" type="number" step="0.05" value="2.80" inputmode="decimal" /></label>'
+        + '<label>Y<input id="learn-target-y" type="number" step="0.05" value="1.90" inputmode="decimal" /></label>'
+        + '<label>Z<input id="learn-target-z" type="number" step="0.05" value="0.20" inputmode="decimal" /></label>'
+        + '<label>RX<input id="learn-target-rx" type="number" step="5" value="0" inputmode="decimal" /></label>'
+        + '<label>RY<input id="learn-target-ry" type="number" step="5" value="0" inputmode="decimal" /></label>'
+        + '<label>RZ<input id="learn-target-rz" type="number" step="5" value="-90" inputmode="decimal" /></label></div>'
+        + '<div class="learn-controls"><button id="learn-from-current" type="button">读取当前末端</button>'
+        + '<button id="learn-from-marker" type="button">读取目标球</button></div>'
+        + '<div class="learn-controls"><button id="learn-ik-start" class="learn-primary" type="button">开始迭代</button>'
+        + '<button id="learn-ik-step" type="button">单步</button>'
+        + '<button id="learn-ik-reset" type="button">重置</button>'
+        + '<button id="learn-ik-solve" type="button">直接求解</button>'
+        + '<label class="learn-speed">速度<select id="learn-ik-speed"><option value="2">2 次/秒</option><option value="4" selected>4 次/秒</option><option value="8">8 次/秒</option><option value="16">16 次/秒</option></select></label></div>'
+        + '<div id="learn-ik-status" class="learn-status" data-state="idle" role="status" aria-live="polite">输入目标位姿后开始迭代演示。</div>'
+        + '<canvas id="learn-ik-chart" width="304" height="132" aria-label="逆运动学收敛曲线"></canvas>'
+        + '<p class="learn-hint">迭代会直接驱动机器人关节；拖动滑块会暂停演示。</p></div>';
+      this.cardManager.register(card);
     }
 
     makeWorkspaceSettingsCard() {

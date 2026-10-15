@@ -43,7 +43,7 @@
           <span class="version-dot"></span>
           <span>实验平台</span>
           <span class="topbar-divider">/</span>
-          <span class="version-label">V0.9</span>
+          <span class="version-label">V1.1</span>
         </div>
 
         <div class="system-state" role="status" aria-live="polite">
@@ -290,6 +290,7 @@
         './src/RobotSensors.js',
         './src/controller/JointController.js', './src/controller/KeyboardController.js', './src/controller/PoseDisplay.js',
         './src/controller/TargetController.js', './src/controller/PickPlaceController.js',
+        './src/controller/LearningController.js',
         './src/main.js',
       ];
       for (const script of scripts) await loadLocalScript(script);

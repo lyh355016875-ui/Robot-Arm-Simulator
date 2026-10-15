@@ -4,24 +4,23 @@
 
 A Three.js-based 3D simulator for six-axis robot arms, available in the browser and as a Windows desktop app. It includes forward/inverse kinematics, joint and end-effector controls, pick-and-place, workcell configuration, and simulated sensor feedback.
 
-- **Current release:** v1.0.0
-- **Use cases:** Kinematics demonstrations, interactive simulation, and frontend development
+- **Current release:** v1.1.0 (adds a kinematics learning card)
+- **Use cases:** Kinematics demonstrations, kinematics teaching, interactive simulation, and frontend development
 - **Important boundary:** This is a simulator; it does not connect to a physical robot, camera, or sensor.
 
 ## Download the Windows desktop app
 
-- [GitHub Release](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.0.0)
-- [Windows x64 installer](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/Robot-Arm-Simulator-1.0.0-win-x64.exe)
-- [Windows x64 portable app](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/Robot-Arm-Simulator-1.0.0-portable-x64.exe)
-- [SHA-256 checksums](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/download/v1.0.0/SHA256SUMS.txt)
+- [GitHub Releases](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases) — installers for every release
+- [v1.1.0 release](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.1.0) — Windows installer and portable build are produced by CI after the tag is pushed
+- Historical: [v1.0.0](https://github.com/lyh355016875-ui/Robot-Arm-Simulator/releases/tag/v1.0.0)
 
-Verify a download in PowerShell:
+Verify a download in PowerShell (checksum lists are attached to each release):
 
 ```powershell
-Get-FileHash .\Robot-Arm-Simulator-1.0.0-win-x64.exe -Algorithm SHA256
+Get-FileHash .\Robot-Arm-Simulator-<version>-win-x64.exe -Algorithm SHA256
 ```
 
-Compare the result with the entry for the same filename in `SHA256SUMS.txt`.
+Compare the result with the entry for the same filename in the release's `SHA256SUMS.txt`.
 
 ## Interface tour
 
@@ -69,8 +68,18 @@ Show or hide control, status, IK, task, and monitor cards; switch between operat
 | Workbench layout | Move, resize, collapse, or hide cards; save a layout from the menu | Layout is stored in the app's browser storage |
 | Scene configuration | Choose workbench, object type/count, position, and color | Supports cubes, spheres, cylinders, and custom parts |
 | Monitoring | Open data, event, and sensor cards | Intended for simulation and development only |
+| Kinematics learning (new in v1.1) | Open the card via "Robot → Kinematics Learning" | Step-by-step FK transform chain; animated IK iterations with a convergence chart |
 
 **Stopping and recovery:** If the gripper has not picked up a part, the current motion can be cancelled. If a stop is requested during placement, the app finishes the current placement first. If automatic placement cannot be completed, the part may remain held and can be put down using the recovery action.
+
+## Kinematics learning (new in v1.1)
+
+The "Kinematics Learning" card turns the FK/IK solvers into interactive lessons. Open it from the "Robot → Kinematics Learning" menu or the workspace card list.
+
+- **FK walkthrough:** expands the 13 translation/rotation matrices from base to tool. Click a step or use "previous / next / auto-play" to inspect each transform expression, the running 4×4 matrix, and the frame origin. The 3D scene shows every joint frame and the skeleton chain with the current step highlighted; dragging joint sliders updates everything live.
+- **IK iteration demo:** enter a target pose (or read the current end effector / scene target), then use "start / single step / solve" to watch damped least squares converge. The arm moves one iteration at a time, the scene draws the end-effector trail and target marker, and the card plots position error (cm) and orientation error (°) per iteration. Dragging a slider pauses the demo; "reset" restores the pre-demo joint angles; convergence, stalls (unreachable targets), and the iteration cap are all reported.
+
+The learning card shares the same kinematics implementation as the production solvers (`fkChain` / `createIKSession`) — no duplicated algorithm.
 
 ## How it works
 
@@ -103,6 +112,7 @@ The [editable Mermaid source](docs/pick-place-flow.mmd) is available for future 
 | `src/RobotSensors.js` | Simulated tool camera, distance, force/torque, and joint feedback | Extend sensor models or monitoring data |
 | `src/ui/` | Cards, layout persistence, menus, workspace modes, and monitors | Add cards, layout presets, or workspace modes |
 | `scripts/kinematics.test.mjs` | Automated FK, IK, and pick-and-place tests | Add regression coverage for motion or task changes |
+| `scripts/learning.test.mjs` | Automated tests for `fkChain` and `createIKSession` | Add regression coverage for kinematics or learning-card changes |
 | `.github/workflows/windows-release.yml` | Tag-triggered tests, Windows build, and draft release | Change CI or release behavior |
 
 ### Repository layout
@@ -119,7 +129,8 @@ The [editable Mermaid source](docs/pick-place-flow.mmd) is available for future 
 │   └── preload.cjs                 # Isolated preload script
 ├── scripts/
 │   ├── serve.mjs                   # Local browser development server
-│   └── kinematics.test.mjs         # Automated tests
+│   ├── kinematics.test.mjs         # Kinematics and pick-and-place tests
+│   └── learning.test.mjs           # fkChain / createIKSession tests
 ├── src/
 │   ├── controller/
 │   ├── kinematics/
@@ -187,7 +198,7 @@ npm run desktop
 ### Tests and builds
 
 ```bash
-npm test              # FK, IK, joint limits, and pick-and-place tests
+npm test              # FK, IK, joint limits, pick-and-place, and learning-module tests
 npm run pack:dir      # Package an unpacked app for the current OS
 npm run dist:win      # Build the Windows x64 installer and portable app
 ```

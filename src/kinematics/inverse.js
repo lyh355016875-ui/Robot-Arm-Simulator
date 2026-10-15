@@ -84,7 +84,9 @@
     return solveLinearSystem(normal, right);
   }
 
-  function inverseKinematics(targetPose, initialAngles, jointLimits, options = {}) {
+  // createIKSession exposes one damped-least-squares iteration per step() so
+  // the learning card can replay the solve; inverseKinematics runs it to completion.
+  function createIKSession(targetPose, initialAngles, jointLimits, options = {}) {
     const target = normalizeTarget(targetPose);
     const limits = normalizeLimits(jointLimits);
     if (!Array.isArray(initialAngles) || initialAngles.length !== 6 || initialAngles.some((angle) => !Number.isFinite(angle))) {
@@ -98,10 +100,19 @@
     const orientationTolerance = Number.isFinite(options.orientationTolerance) ? options.orientationTolerance : 0.03;
     const maximumJointStep = Number.isFinite(options.maximumJointStep) ? options.maximumJointStep : 0.22;
     let metrics = errorFor(angles, target, orientationWeight);
-    let iterations = 0;
+    const state = {
+      angles,
+      iterations: 0,
+      cost: metrics.cost,
+      positionError: metrics.positionError,
+      orientationError: metrics.orientationError,
+      converged: metrics.positionError <= positionTolerance && metrics.orientationError <= orientationTolerance,
+      stalled: false,
+      history: [],
+    };
 
-    for (; iterations < maxIterations; iterations += 1) {
-      if (metrics.positionError <= positionTolerance && metrics.orientationError <= orientationTolerance) break;
+    function step() {
+      if (state.converged || state.iterations >= maxIterations) return false;
       const currentPose = app.forwardKinematics(angles);
       const jacobian = buildJacobian(angles, currentPose, orientationWeight, 1e-4);
       let proposal = null;
@@ -119,25 +130,49 @@
           const candidateMetrics = errorFor(candidate, target, orientationWeight);
           if (candidateMetrics.cost < metrics.cost - Math.max(1e-14, metrics.cost * 1e-12)
             && (!proposal || candidateMetrics.cost < proposal.metrics.cost)) {
-            proposal = { angles: candidate, metrics: candidateMetrics };
+            proposal = { angles: candidate, metrics: candidateMetrics, damping };
           }
         }
       }
 
-      if (!proposal) break;
+      if (!proposal) {
+        state.stalled = true;
+        return false;
+      }
       for (let index = 0; index < 6; index += 1) angles[index] = proposal.angles[index];
       metrics = proposal.metrics;
+      state.iterations += 1;
+      state.cost = metrics.cost;
+      state.positionError = metrics.positionError;
+      state.orientationError = metrics.orientationError;
+      state.converged = metrics.positionError <= positionTolerance && metrics.orientationError <= orientationTolerance;
+      state.history.push({
+        iteration: state.iterations,
+        damping: proposal.damping,
+        cost: metrics.cost,
+        positionError: metrics.positionError,
+        orientationError: metrics.orientationError,
+      });
+      return true;
     }
 
     return {
-      angles,
-      converged: metrics.positionError <= positionTolerance && metrics.orientationError <= orientationTolerance,
-      positionError: metrics.positionError,
-      orientationError: metrics.orientationError,
-      iterations,
+      step,
+      state,
+      target,
+      limits,
+      params: { maxIterations, orientationWeight, positionTolerance, orientationTolerance },
     };
   }
 
+  function inverseKinematics(targetPose, initialAngles, jointLimits, options = {}) {
+    const session = createIKSession(targetPose, initialAngles, jointLimits, options);
+    while (session.step()) {}
+    const { angles, iterations, positionError, orientationError, converged } = session.state;
+    return { angles, converged, positionError, orientationError, iterations };
+  }
+
   app.inverseKinematics = inverseKinematics;
+  app.createIKSession = createIKSession;
   app.DEFAULT_JOINT_LIMITS_RAD = JOINT_LIMITS.map((limit) => limit.slice());
 })(globalThis);

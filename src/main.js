@@ -3,7 +3,7 @@
   global.RobotArmSimulator = global.RobotArmSimulator || {};
   const app = global.RobotArmSimulator;
 
-  const { createCamera, createRenderer, createRobotArm, Workbench, JointController, KeyboardController, PoseDisplay, TargetController, PickPlaceController, RobotSensors, WorkspaceManager, MonitorCards, createScene } = app;
+  const { createCamera, createRenderer, createRobotArm, Workbench, JointController, KeyboardController, PoseDisplay, TargetController, PickPlaceController, LearningController, RobotSensors, WorkspaceManager, MonitorCards, createScene } = app;
   const container = document.querySelector('#scene-container');
   const fpsValue = document.querySelector('#fps-value');
   try {
@@ -24,16 +24,18 @@
     const workspaceManager = new WorkspaceManager({ layer: document.getElementById('card-layer'), workbench, scene });
     const pickPlaceController = new PickPlaceController({ robot, workbench, targetController });
     workspaceManager.setTaskController(pickPlaceController);
+    const learningController = new LearningController({ robot, scene, jointController, targetController, taskController: pickPlaceController });
     const robotSensors = new RobotSensors({ scene, robot, workbench, taskController: pickPlaceController });
     const monitorCards = new MonitorCards({ robot, workbench, taskController: pickPlaceController });
     poseDisplay.update();
     app.runtime = { scene, robot, workbench, camera, controls, renderer, jointController, targetController,
-      pickPlaceController, robotSensors, workspaceManager, monitorCards };
+      pickPlaceController, learningController, robotSensors, workspaceManager, monitorCards };
 
     window.addEventListener('pagehide', () => {
       jointController.dispose();
       keyboardController.dispose();
       pickPlaceController.dispose();
+      learningController.dispose();
       robotSensors.dispose();
       targetController.dispose();
       controls.dispose();
@@ -67,6 +69,7 @@
       controls.update(delta);
       targetController.update(delta);
       pickPlaceController.update(delta);
+      learningController.update(delta);
       robotSensors.update(delta);
       monitorCards.update(delta);
       renderer.render(scene, camera);
